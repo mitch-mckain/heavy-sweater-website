@@ -10,12 +10,12 @@
 
     :root {
       --bg: #f9f8f6;
-      --fg: #111;
+      --fg: #1a1917;
       --muted: #888;
       --border: #e0e0e0;
-      --card-bg: #fff;
+      --card-bg: #faf9f7;
       --nav-h: 56px;
-      --cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Crect x='0' y='0' width='16' height='16' fill='%23111'/%3E%3C/svg%3E") 8 8, auto;
+      --cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 18 18'%3E%3Ccircle cx='9' cy='9' r='8.5' fill='%23111'/%3E%3Cline x1='5.5' y1='6' x2='7.5' y2='8' stroke='white' stroke-width='1.3' stroke-linecap='round'/%3E%3Cline x1='7.5' y1='6' x2='5.5' y2='8' stroke='white' stroke-width='1.3' stroke-linecap='round'/%3E%3Cline x1='10.5' y1='6' x2='12.5' y2='8' stroke='white' stroke-width='1.3' stroke-linecap='round'/%3E%3Cline x1='12.5' y1='6' x2='10.5' y2='8' stroke='white' stroke-width='1.3' stroke-linecap='round'/%3E%3Cpath d='M5.5 13 Q9 10.5 12.5 13' fill='none' stroke='white' stroke-width='1.3' stroke-linecap='round'/%3E%3C/svg%3E") 9 9, auto;
     }
 
     html, body {
@@ -374,9 +374,9 @@
       position: absolute;
       top: 12px;
       right: 12px;
-      background: #fff;
-      color: #111;
-      border: 2px solid #111;
+      background: #faf9f7;
+      color: #1a1917;
+      border: 2px solid #1a1917;
       font-family: 'Fira Code', monospace;
       font-size: 1.1rem;
       font-weight: 700;
@@ -695,7 +695,7 @@
       position: fixed;
       bottom: 0; left: 0; right: 0;
       height: 32px;
-      border-top: 1px solid #000;
+      border-top: 1px solid #1a1917;
       background: var(--bg);
       overflow: hidden;
       display: flex;
@@ -706,7 +706,7 @@
       position: fixed;
       top: 0; left: 0; right: 0;
       height: 32px;
-      border-bottom: 1px solid #000;
+      border-bottom: 1px solid #1a1917;
       background: var(--bg);
       overflow: hidden;
       display: flex;
@@ -723,13 +723,27 @@
     .footer-ticker-item {
       font-family: 'Fira Code', monospace;
       font-size: 0.68rem;
-      color: #000;
+      color: #1a1917;
       padding: 0 12px;
     }
 
     @keyframes ticker {
       from { transform: translateX(0); }
       to   { transform: translateX(-50%); }
+    }
+
+    @keyframes sparkle-fade {
+      0%   { opacity: 1; transform: translate(-50%, -50%) scale(1) rotate(0deg); }
+      100% { opacity: 0; transform: translate(-50%, calc(-50% - 24px)) scale(0.2) rotate(45deg); }
+    }
+
+    .sparkle {
+      position: fixed;
+      pointer-events: none;
+      z-index: 99998;
+      user-select: none;
+      line-height: 1;
+      animation: sparkle-fade 0.55s ease-out forwards;
     }
 
     /* ── TABLET (≤ 1024px) ───────────────────────────── */
@@ -1238,6 +1252,56 @@
       hint.textContent = 'copied!';
       setTimeout(() => { hint.textContent = 'click to copy'; }, 2000);
     }
+
+    // ── SPARKLE CURSOR ───────────────────────────────────
+    (function() {
+      const chars = ['✦', '✧', '✸', '✺', '★', '✱', '+'];
+      let tick = 0;
+      document.addEventListener('mousemove', (e) => {
+        tick++;
+        if (tick % 4 !== 0) return;
+        const el = document.createElement('span');
+        el.className = 'sparkle';
+        el.textContent = chars[Math.floor(Math.random() * chars.length)];
+        el.style.left = e.clientX + 'px';
+        el.style.top  = e.clientY + 'px';
+        el.style.fontSize = (7 + Math.random() * 10) + 'px';
+        document.body.appendChild(el);
+        setTimeout(() => el.remove(), 560);
+      });
+    })();
+
+    // ── FILM GRAIN ────────────────────────────────────────
+    (function() {
+      const canvas = document.createElement('canvas');
+      canvas.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:9999;opacity:0.032;';
+      document.body.appendChild(canvas);
+      const ctx = canvas.getContext('2d');
+
+      function resize() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      }
+      resize();
+      window.addEventListener('resize', resize);
+
+      function grain() {
+        const w = canvas.width, h = canvas.height;
+        const imageData = ctx.createImageData(w, h);
+        const data = imageData.data;
+        for (let i = 0; i < data.length; i += 4) {
+          const v = Math.random() * 255;
+          data[i] = v;
+          data[i+1] = v;
+          data[i+2] = v;
+          data[i+3] = 255;
+        }
+        ctx.putImageData(imageData, 0, 0);
+        setTimeout(() => requestAnimationFrame(grain), 100);
+      }
+
+      grain();
+    })();
   </script>
 
 </body>
