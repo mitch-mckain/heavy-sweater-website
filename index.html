@@ -1,0 +1,1244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Heavy Sweater</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700;900&family=Fira+Code:wght@400;700&family=Jacquard+12+Charted&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f9f8f6;
+      --fg: #111;
+      --muted: #888;
+      --border: #e0e0e0;
+      --card-bg: #fff;
+      --nav-h: 56px;
+      --cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Crect x='0' y='0' width='16' height='16' fill='%23111'/%3E%3C/svg%3E") 8 8, auto;
+    }
+
+    html, body {
+      height: 100%;
+      font-family: 'Fira Code', monospace;
+      background: var(--bg);
+      color: var(--fg);
+      overflow: hidden;
+      cursor: var(--cursor);
+    }
+
+    a, button { cursor: var(--cursor); }
+
+    .home-btn {
+      position: fixed;
+      top: calc(32px + 12px);
+      left: 20px;
+      z-index: 60;
+      background: none;
+      border: none;
+      padding: 4px;
+      color: var(--muted);
+      transition: color 0.15s;
+      line-height: 0;
+    }
+
+    .home-btn:hover { color: var(--fg); }
+    .home-btn svg { width: 24px; height: 24px; display: block; }
+
+    .hamburger-btn {
+      display: none;
+      background: none;
+      border: none;
+      padding: 6px;
+      cursor: var(--cursor);
+      flex-direction: column;
+      gap: 5px;
+      flex-shrink: 0;
+    }
+
+    .hamburger-btn span {
+      display: block;
+      width: 22px;
+      height: 2px;
+      background: var(--fg);
+    }
+
+    .mobile-header {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 48px;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      z-index: 60;
+      align-items: center;
+      padding: 0 12px;
+    }
+
+    .mobile-header-title {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: 'Fira Code', monospace;
+      font-size: 0.75rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      white-space: nowrap;
+      pointer-events: none;
+    }
+
+    .mobile-header-spacer { flex: 1; }
+
+    /* ── SITE NAV ─────────────────────────────────────── */
+    .site-nav {
+      position: fixed;
+      bottom: 32px;
+      left: 0; right: 0;
+      height: 15vh;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      gap: 48px;
+      padding-top: 20px;
+      background: var(--bg);
+      z-index: 50;
+    }
+
+    /* ── SECTIONS ────────────────────────────────────── */
+    .sections-wrap {
+      position: fixed;
+      top: 32px;
+      left: 0; right: 0;
+      bottom: calc(32px + 15vh);
+      overflow: hidden;
+    }
+
+    .section {
+      display: none;
+      height: 100%;
+      padding: 64px 48px 48px;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .section.active { display: flex; }
+
+    .mobile-home-nav { display: none; }
+
+    /* ── HERO ────────────────────────────────────────── */
+    #home {
+      text-align: center;
+      gap: 20px;
+    }
+
+    .home-nav-link {
+      font-family: 'Fira Code', monospace;
+      font-size: 1rem;
+      font-weight: 400;
+      background: none;
+      border: none;
+      cursor: var(--cursor);
+      text-decoration: underline;
+      text-underline-offset: 4px;
+      transition: opacity 0.2s;
+    }
+
+    .home-nav-link:hover { opacity: 0.75; }
+
+    .site-nav-home {
+      font-family: 'Fira Code', monospace;
+      font-size: 0.75rem;
+      font-weight: 400;
+      letter-spacing: 0.1em;
+      background: none;
+      border: none;
+      cursor: var(--cursor);
+      color: var(--muted);
+      padding-right: 20px;
+      border-right: 1px solid var(--border);
+      margin-right: 8px;
+      transition: color 0.15s;
+    }
+
+    .site-nav-home:hover { color: var(--fg); }
+
+    .home-nav-link.shows   { color: #0000ff; }
+    .home-nav-link.merch   { color: #ff0000; }
+    .home-nav-link.listen  { color: #00aa00; }
+    .home-nav-link.about   { color: #cc5500; }
+    .home-nav-link.contact { color: #8800cc; }
+
+    /* ── CONTACT ──────────────────────────────────────── */
+    #contact {
+      align-items: center;
+      justify-content: center;
+    }
+
+    .contact-email {
+      font-size: clamp(1.2rem, 3vw, 3rem);
+      font-family: 'Fira Code', monospace;
+      font-weight: 400;
+      line-height: 1.4;
+      background: none;
+      border: none;
+      padding: 0;
+      text-align: center;
+    }
+
+    .contact-email-highlight { color: #0000ff; }
+
+    .contact-email-copy {
+      display: block;
+      font-size: 0.7rem;
+      color: var(--muted);
+      margin-top: 12px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      transition: opacity 0.2s;
+    }
+
+    /* ── ABOUT ────────────────────────────────────────── */
+    #about {
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      overflow: hidden;
+    }
+
+    .about-inner {
+      width: 100%;
+      max-width: 900px;
+      height: 100%;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+      align-items: center;
+    }
+
+    .about-img {
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+      display: block;
+      padding: 12px;
+    }
+
+    .about-text {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 28px;
+      padding: 40px 48px;
+    }
+
+    .about-label {
+      font-size: 0.65rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .about-body {
+      font-size: clamp(1rem, 1.8vw, 1.8rem);
+      line-height: 1.4;
+      color: var(--fg);
+      font-weight: 400;
+    }
+
+    .about-body p + p { margin-top: 1.2em; }
+
+    .about-links {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .about-link {
+      font-size: 0.75rem;
+      color: var(--muted);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: color 0.15s;
+    }
+
+    .about-link:hover { color: var(--fg); }
+
+    .hero-title {
+      font-family: 'Jacquard 12 Charted', serif;
+      font-size: clamp(4rem, 16vw, 16vw);
+      font-weight: 400;
+      letter-spacing: 0.02em;
+      line-height: 1.15;
+      text-transform: uppercase;
+      padding: 24px 0;
+    }
+
+    .hero-sub {
+      font-size: 0.85rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .hero-cta {
+      margin-top: 12px;
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 10px 24px;
+      font-family: inherit;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      text-decoration: none;
+      border: 1.5px solid var(--fg);
+      color: var(--fg);
+      background: transparent;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .btn:hover {
+      background: var(--fg);
+      color: var(--bg);
+    }
+
+    .btn.filled {
+      background: var(--fg);
+      color: var(--bg);
+    }
+
+    .btn.filled:hover {
+      background: transparent;
+      color: var(--fg);
+    }
+
+    /* ── MERCH ────────────────────────────────────────── */
+    #merch { gap: 40px; }
+
+    .section-title {
+      font-size: 0.75rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .merch-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      width: 100%;
+      max-width: none;
+      flex: 0 0 auto;
+    }
+
+    #merch {
+      padding: 24px 32px 16px;
+      justify-content: center;
+    }
+
+    #merch .section-title {
+      flex-shrink: 0;
+    }
+
+    .merch-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0;
+      text-align: center;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      overflow: hidden;
+      position: relative;
+      min-height: 0;
+    }
+
+    .merch-price-tag {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: #fff;
+      color: #111;
+      border: 2px solid #111;
+      font-family: 'Fira Code', monospace;
+      font-size: 1.1rem;
+      font-weight: 700;
+      padding: 6px 14px;
+      z-index: 2;
+    }
+
+    .merch-card:hover {
+      border-color: #bbb;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+    }
+
+    .merch-card-info {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      padding: 20px 24px 24px;
+    }
+
+    .merch-img {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      object-fit: cover;
+      display: block;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .merch-name {
+      font-size: 1.1rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .merch-desc {
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .merch-price { font-size: 1.1rem; font-weight: 700; }
+
+    /* ── SHOWS ────────────────────────────────────────── */
+    #shows {
+      padding: 32px 40px;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .shows-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 24px;
+      width: 100%;
+      max-width: 1100px;
+      margin: 0 auto;
+      justify-content: center;
+    }
+
+    .show-card {
+      display: flex;
+      flex-direction: column;
+      width: 260px;
+      gap: 0;
+      border: 1px solid var(--border);
+      overflow: hidden;
+      background: var(--card-bg);
+      transition: box-shadow 0.2s;
+    }
+
+    .show-card:hover {
+      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+    }
+
+    .show-poster {
+      width: 100%;
+      aspect-ratio: 3 / 4;
+      object-fit: cover;
+      display: block;
+    }
+
+    .show-poster-placeholder {
+      width: 100%;
+      aspect-ratio: 3 / 4;
+      background: #eee;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.6rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .show-info {
+      padding: 14px 16px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      border-top: 1px solid var(--border);
+      flex: 1;
+      min-height: 210px;
+    }
+
+    .show-date {
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .show-venue { font-size: 0.9rem; font-weight: 700; }
+
+    .show-city {
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    .show-ticket-link {
+      margin-top: auto;
+      align-self: stretch;
+      text-align: center;
+    }
+
+    .shows-empty {
+      font-size: 1rem;
+      color: var(--muted);
+      display: none;
+    }
+
+    /* ── LISTEN ────────────────────────────────────────── */
+    #listen {
+      align-items: center;
+      padding: 24px 48px;
+      gap: 0;
+      overflow: hidden;
+      justify-content: center;
+    }
+
+    .listen-inner {
+      width: 100%;
+      max-width: 1000px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      flex: 0 0 auto;
+    }
+
+    .listen-category { display: flex; flex-direction: column; gap: 20px; }
+
+    .listen-cat-label {
+      font-size: 0.65rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .listen-albums {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 24px;
+    }
+
+    .album-card {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      cursor: pointer;
+      width: clamp(120px, 14vw, 190px);
+    }
+
+    .album-art {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      object-fit: cover;
+      display: block;
+      border: 1px solid var(--border);
+      transition: opacity 0.2s, box-shadow 0.2s;
+    }
+
+    /* placeholder art for albums without images */
+    .album-art-placeholder {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      border: 1px solid var(--border);
+      background: var(--card-bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.55rem;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      transition: opacity 0.2s, box-shadow 0.2s;
+    }
+
+    .album-card:hover .album-art,
+    .album-card:hover .album-art-placeholder {
+      opacity: 0.8;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    }
+
+    .album-info { display: flex; flex-direction: column; gap: 3px; }
+
+    .album-title {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--fg);
+    }
+
+    .album-year {
+      font-size: 0.65rem;
+      color: var(--muted);
+    }
+
+    /* ── MODAL ─────────────────────────────────────────── */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-overlay.open { display: flex; }
+
+    .modal {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      width: 100%;
+      max-width: 360px;
+      padding: 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .modal-title-block { display: flex; flex-direction: column; gap: 4px; }
+
+    .modal-album-name {
+      font-family: 'Inter', sans-serif;
+      font-size: 1rem;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+    }
+
+    .modal-prompt {
+      font-size: 0.62rem;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 1.2rem;
+      cursor: pointer;
+      color: var(--muted);
+      flex-shrink: 0;
+      line-height: 1;
+      transition: color 0.15s;
+    }
+
+    .modal-close:hover { color: var(--fg); }
+
+    .modal-platforms {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .platform-link {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 14px 16px;
+      border: 1px solid var(--border);
+      text-decoration: none;
+      color: var(--fg);
+      background: var(--bg);
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+
+    .platform-link:hover {
+      border-color: #bbb;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    }
+
+    .platform-logo {
+      width: 28px; height: 28px; flex-shrink: 0;
+    }
+
+    .platform-logo svg { width: 28px; height: 28px; display: block; }
+
+    .platform-name { font-size: 0.72rem; font-weight: 700; flex: 1; }
+
+    .platform-arrow { font-size: 0.9rem; color: var(--muted); }
+
+    /* ── FOOTER ───────────────────────────────────────── */
+    .footer-ticker {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      height: 32px;
+      border-top: 1px solid #000;
+      background: var(--bg);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+    }
+
+    .header-ticker {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 32px;
+      border-bottom: 1px solid #000;
+      background: var(--bg);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      z-index: 100;
+    }
+
+    .footer-ticker-track {
+      display: flex;
+      white-space: nowrap;
+      animation: ticker 20s linear infinite;
+    }
+
+    .footer-ticker-item {
+      font-family: 'Fira Code', monospace;
+      font-size: 0.68rem;
+      color: #000;
+      padding: 0 12px;
+    }
+
+    @keyframes ticker {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+
+    /* ── TABLET (≤ 1024px) ───────────────────────────── */
+    @media (max-width: 1024px) {
+      .merch-grid { grid-template-columns: repeat(3, 1fr); }
+      .album-card { width: clamp(90px, 10vw, 140px); }
+    }
+
+    /* ── MOBILE (≤ 768px) ────────────────────────────── */
+    @media (max-width: 768px) {
+
+      /* Kill the fixed full-screen layout, let it scroll */
+      html, body { overflow: auto; height: auto; }
+
+      .header-ticker { display: none; }
+      /* Keep footer ticker, fixed at very bottom */
+      .footer-ticker {
+        display: flex;
+        position: fixed;
+        bottom: 0; left: 0; right: 0;
+        z-index: 50;
+      }
+
+      /* Hide standalone desktop home btn */
+      .home-btn { display: none; }
+      /* But show it inside the mobile header */
+      .mobile-header .home-btn { display: flex; align-items: center; }
+      .mobile-header { display: flex; }
+
+      .sections-wrap {
+        position: static;
+        overflow: visible;
+        margin-top: 48px;
+        margin-bottom: 32px;
+      }
+
+      .section {
+        display: none;
+        height: auto;
+        min-height: calc(100svh - 48px - 32px);
+        padding: 32px 20px 80px;
+        overflow: visible;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .section.active { display: flex; }
+
+      #home {
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        min-height: calc(100svh - 48px - 32px);
+        padding-top: 40px;
+        padding-bottom: 32px;
+      }
+
+      .hero-title { font-size: clamp(3.5rem, 18vw, 18vw); }
+
+      /* Vertical nav on mobile home screen */
+      .mobile-home-nav {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+        margin-top: 24px;
+      }
+
+      .mobile-home-nav .home-nav-link {
+        font-size: 1.6rem;
+      }
+
+      /* Hide desktop nav, show hamburger */
+      .site-nav { display: none; }
+      .hamburger-btn { display: flex; }
+
+      /* Mobile menu overlay */
+      .mobile-menu {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: var(--bg);
+        z-index: 200;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 32px;
+      }
+
+      .mobile-menu.open { display: flex; }
+
+      .mobile-menu .home-nav-link {
+        font-size: 2rem;
+        text-underline-offset: 6px;
+      }
+
+      .mobile-menu-close {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        background: none;
+        border: none;
+        font-size: 1.4rem;
+        color: var(--muted);
+        cursor: var(--cursor);
+        line-height: 1;
+        padding: 8px;
+      }
+
+      /* Merch */
+      #merch .section-title { display: none; }
+      #merch { padding: 32px 20px; gap: 16px; justify-content: center; align-items: center; }
+      .merch-grid { grid-template-columns: 1fr; flex: none; min-height: auto; gap: 16px; max-width: 400px; width: 100%; }
+      .merch-card { min-height: auto; }
+      .merch-img { flex: none; width: 100%; aspect-ratio: 1 / 1; }
+      .merch-card-info { padding: 12px 14px 16px; }
+      .merch-name { font-size: 0.85rem; }
+      .merch-desc { font-size: 0.72rem; }
+      .merch-price-tag { font-size: 0.8rem; padding: 4px 10px; }
+
+      /* Shows */
+      #shows { padding: 32px 16px; justify-content: center; align-items: center; }
+      .shows-grid { flex-direction: column; align-items: center; }
+      .show-card { width: 100%; max-width: 360px; }
+
+      /* Listen */
+      #listen { padding: 32px 20px; justify-content: center; align-items: center; }
+      .listen-inner { flex: none; min-height: auto; gap: 32px; }
+      .listen-albums { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+      .album-card { width: 100%; }
+
+      /* About */
+      #about { padding: 32px 20px; justify-content: center; align-items: center; overflow: visible; }
+      .about-inner {
+        grid-template-columns: 1fr;
+        height: auto;
+        max-width: 100%;
+        align-items: center;
+        gap: 20px;
+      }
+      .about-img { max-height: 50vw; padding: 0; object-fit: cover; width: 100%; }
+      .about-text { padding: 0; gap: 16px; text-align: center; align-items: center; }
+      .about-body { font-size: clamp(1.2rem, 5vw, 2rem); }
+
+      /* Contact */
+      #contact { padding: 32px 20px; justify-content: center; align-items: center; }
+      .contact-email { font-size: clamp(1rem, 5vw, 2rem); text-align: center; }
+
+      /* Modal */
+      .modal { max-width: 100%; margin: 0 16px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header-ticker">
+    <div class="footer-ticker-track">
+      <span class="footer-ticker-item">heavy-sweater.com</span><span class="footer-ticker-item">*</span>
+      <span class="footer-ticker-item">heavy-sweater.com</span><span class="footer-ticker-item">*</span>
+      <span class="footer-ticker-item">heavy-sweater.com</span><span class="footer-ticker-item">*</span>
+      <span class="footer-ticker-item">heavy-sweater.com</span><span class="footer-ticker-item">*</span>
+      <span class="footer-ticker-item">heavy-sweater.com</span><span class="footer-ticker-item">*</span>
+      <span class="footer-ticker-item">heavy-sweater.com</span><span class="footer-ticker-item">*</span>
+      <span class="footer-ticker-item">heavy-sweater.com</span><span class="footer-ticker-item">*</span>
+      <span class="footer-ticker-item">heavy-sweater.com</span><span class="footer-ticker-item">*</span>
+      <span class="footer-ticker-item">heavy-sweater.com</span><span class="footer-ticker-item">*</span>
+      <span class="footer-ticker-item">heavy-sweater.com</span><span class="footer-ticker-item">*</span>
+      <span class="footer-ticker-item">heavy-sweater.com</span><span class="footer-ticker-item">*</span>
+      <span class="footer-ticker-item">heavy-sweater.com</span><span class="footer-ticker-item">*</span>
+      <span class="footer-ticker-item">heavy-sweater.com</span><span class="footer-ticker-item">*</span>
+      <span class="footer-ticker-item">heavy-sweater.com</span><span class="footer-ticker-item">*</span>
+      <span class="footer-ticker-item">heavy-sweater.com</span><span class="footer-ticker-item">*</span>
+      <span class="footer-ticker-item">heavy-sweater.com</span><span class="footer-ticker-item">*</span>
+    </div>
+  </div>
+
+  <div class="mobile-header">
+    <button class="home-btn" onclick="closeMobileMenu(); showSection('home'); window.scrollTo(0,0);" title="home" style="position:static; top:auto; left:auto; flex-shrink:0;">
+      <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 9.5L10 3l7 6.5"/>
+        <path d="M5 8.5V17h4v-4h2v4h4V8.5"/>
+      </svg>
+    </button>
+    <span class="mobile-header-spacer"></span>
+    <span class="mobile-header-title" id="mobile-page-title">heavy sweater</span>
+    <span class="mobile-header-spacer"></span>
+    <button class="hamburger-btn" onclick="openMobileMenu()" aria-label="menu" style="flex-shrink:0;">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+
+  <div class="mobile-menu" id="mobile-menu">
+    <button class="mobile-menu-close" onclick="closeMobileMenu()">✕</button>
+    <button class="home-nav-link shows"   onclick="mobileNav('shows')">shows</button>
+    <button class="home-nav-link merch"   onclick="mobileNav('merch')">merch</button>
+    <button class="home-nav-link listen"  onclick="mobileNav('listen')">listen</button>
+    <button class="home-nav-link about"   onclick="mobileNav('about')">about</button>
+    <button class="home-nav-link contact" onclick="mobileNav('contact')">contact</button>
+  </div>
+
+  <button class="home-btn" onclick="showSection('home')" title="home">
+    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 9.5L10 3l7 6.5"/>
+      <path d="M5 8.5V17h4v-4h2v4h4V8.5"/>
+    </svg>
+  </button>
+
+  <div class="sections-wrap">
+
+    <!-- HOME -->
+    <section class="section active" id="home">
+      <h1 class="hero-title">Heavy<br>Sweater</h1>
+      <nav class="mobile-home-nav">
+        <button class="home-nav-link shows"   onclick="showSection('shows')">shows</button>
+        <button class="home-nav-link merch"   onclick="showSection('merch')">merch</button>
+        <button class="home-nav-link listen"  onclick="showSection('listen')">listen</button>
+        <button class="home-nav-link about"   onclick="showSection('about')">about</button>
+        <button class="home-nav-link contact" onclick="showSection('contact')">contact</button>
+      </nav>
+    </section>
+
+    <!-- MERCH -->
+    <section class="section" id="merch">
+
+      <p class="section-title">Merch</p>
+      <div class="merch-grid">
+        <div class="merch-card">
+          <span class="merch-price-tag">$60</span>
+          <img class="merch-img" src="img/Sweater-mock.jpg" alt="Heavy Sweater Hoodie" />
+          <div class="merch-card-info">
+            <div class="merch-name">Heavy Sweater Hoodie</div>
+            <div class="merch-desc">M, L, XL, XXL</div>
+            <a href="#" class="btn filled">Buy Now</a>
+          </div>
+        </div>
+        <div class="merch-card">
+          <span class="merch-price-tag">$25</span>
+          <img class="merch-img" src="img/Devil_Tshirt.jpg" alt="Green Devil T-Shirt" />
+          <div class="merch-card-info">
+            <div class="merch-name">Green Devil T-Shirt</div>
+            <div class="merch-desc">S, M, L</div>
+            <a href="#" class="btn filled">Buy Now</a>
+          </div>
+        </div>
+        <div class="merch-card">
+          <span class="merch-price-tag">$25</span>
+          <img class="merch-img" src="img/Stretcher.jpg" alt="Stretcher T-Shirt" />
+          <div class="merch-card-info">
+            <div class="merch-name">Stretcher T-Shirt</div>
+            <div class="merch-desc">S, M, L, XL, XXL, XXXL</div>
+            <a href="#" class="btn filled">Buy Now</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SHOWS -->
+    <section class="section" id="shows">
+
+      <div class="shows-grid" id="shows-grid">
+
+        <div class="show-card" data-date="2026-03-19">
+          <img class="show-poster" src="https://toronto.askapunk.net/media/a8bf59067645d8019aa240c63b2a1959.jpg" alt="Heavy Sweater show poster" />
+          <div class="show-info">
+            <div class="show-date">Thu, Mar 19, 2026 — 19+</div>
+            <div class="show-venue">Doc Ellis</div>
+            <div class="show-city">Toronto, ON · w/ Backseat Dragon / Be Still / Prior Things</div>
+            <div class="show-city">$15 adv / $20 door (PWYC)</div>
+            <a href="https://www.newfriendsdiy.com/event-details-registration/heavy-sweater-backseat-dragon-be-still-prior-things" target="_blank" class="btn show-ticket-link">Tickets</a>
+          </div>
+        </div>
+
+        <div class="show-card" data-date="2026-05-14">
+          <img class="show-poster" src="https://static.tixr.com/static/images/external/img/8da42cae-60dd-4c3c-91a5-f58e17adfef7.png" alt="Kerosene Heights show poster" />
+          <div class="show-info">
+            <div class="show-date">Thu, May 14, 2026 — 8:00 PM</div>
+            <div class="show-venue">The Sound Garage at Blood Brothers Brewing</div>
+            <div class="show-city">Toronto, ON · w/ Hi Low / Kerosene Heights</div>
+            <a href="https://www.tixr.com/groups/noisemakerpresents/events/kerosene-heights-171874" target="_blank" class="btn show-ticket-link">Tickets</a>
+          </div>
+        </div>
+
+      </div>
+      <p class="shows-empty" id="shows-empty">No upcoming shows atm</p>
+    </section>
+
+    <!-- LISTEN -->
+    <section class="section" id="listen">
+
+      <div class="listen-inner">
+
+        <!-- LPs -->
+        <div class="listen-category">
+          <div class="listen-cat-label">LP</div>
+          <div class="listen-albums">
+
+            <div class="album-card" onclick="openModal('SO SAD !', 'https://heavy-sweater.bandcamp.com/album/so-sad-2', 'https://open.spotify.com/album/5LceiNUkXq3SMblAzQ3cBJ?si=PA2DlGubQ9KjsnpzNfqUhg', 'https://music.apple.com/us/album/so-sad/1797009279')">
+              <img class="album-art" src="img/so_sad.jpg" alt="SO SAD !" />
+              <div class="album-info">
+                <div class="album-title">SO SAD !</div>
+                <div class="album-year">2025</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- EPs -->
+        <div class="listen-category">
+          <div class="listen-cat-label">EP</div>
+          <div class="listen-albums">
+
+            <div class="album-card" onclick="openModal('HEMORRHAGING', 'https://heavy-sweater.bandcamp.com/album/hemorrhaging', 'https://open.spotify.com/album/11qdE5NKhWXSOGLwX9heKP?si=pvrgYITcS_Wx9LDUO_DIPg', 'https://music.apple.com/us/album/hemorrhaging-ep/1841386692')">
+              <img class="album-art" src="img/hemo.jpg" alt="HEMORRHAGING" />
+              <div class="album-info">
+                <div class="album-title">HEMORRHAGING</div>
+                <div class="album-year">2025</div>
+              </div>
+            </div>
+
+            <div class="album-card" onclick="openModal('CROSSTRAIL', 'https://heavy-sweater.bandcamp.com/album/crosstrail', 'https://open.spotify.com/album/4KsXXurF786WkPQGzvZPEx?si=OhQl7y9FQaeq-K3Rv7Oryw', 'https://music.apple.com/us/album/crosstrail-ep/1649481830')">
+              <img class="album-art" src="img/crosstrail.jpg" alt="CROSSTRAIL" />
+              <div class="album-info">
+                <div class="album-title">CROSSTRAIL</div>
+                <div class="album-year">2022</div>
+              </div>
+            </div>
+
+            <div class="album-card" onclick="openModal('HEAVY SWEATER', 'https://heavy-sweater.bandcamp.com/album/heavy-sweater-2', 'https://open.spotify.com/album/7CH9nKVr9Q8zOaPksgmDct?si=JjRbWHVMR0qMrv6fO-Nflw', 'https://music.apple.com/us/album/heavy-sweater-ep/1551517501')">
+              <img class="album-art" src="img/Heavy_sweater.jpg" alt="HEAVY SWEATER" />
+              <div class="album-info">
+                <div class="album-title">HEAVY SWEATER</div>
+                <div class="album-year">2021</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ABOUT -->
+    <section class="section" id="about">
+
+      <div class="about-inner">
+        <img class="about-img" src="img/live.png" alt="Heavy Sweater live" />
+        <div class="about-text">
+          <div class="about-body">
+            <p>Heavy Sweater is a rock band from Toronto ON.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section class="section" id="contact">
+      <button class="contact-email" onclick="copyEmail()">
+        Email: <span class="contact-email-highlight">hvyswtr@gmail.com</span>
+        <span class="contact-email-copy" id="copy-hint">click to copy</span>
+      </button>
+    </section>
+
+  </div>
+
+  <!-- SITE NAV -->
+  <nav class="site-nav">
+    <button class="home-nav-link shows"   onclick="showSection('shows')">shows</button>
+    <button class="home-nav-link merch"   onclick="showSection('merch')">merch</button>
+    <button class="home-nav-link listen"  onclick="showSection('listen')">listen</button>
+    <button class="home-nav-link about"   onclick="showSection('about')">about</button>
+    <button class="home-nav-link contact" onclick="showSection('contact')">contact</button>
+  </nav>
+
+  <!-- MODAL -->
+  <div class="modal-overlay" id="modal" onclick="closeModalOnOverlay(event)">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title-block">
+          <div class="modal-album-name" id="modal-album-name"></div>
+          <div class="modal-prompt">Where do you want to listen?</div>
+        </div>
+        <button class="modal-close" onclick="closeModal()">✕</button>
+      </div>
+      <div class="modal-platforms">
+
+        <a id="modal-spotify" href="#" target="_blank" class="platform-link">
+          <div class="platform-logo">
+            <img src="img/Spotify_icon.png" alt="Spotify" style="width:28px;height:28px;object-fit:contain;display:block;" />
+          </div>
+          <span class="platform-name">Spotify</span>
+          <span class="platform-arrow">→</span>
+        </a>
+
+        <a id="modal-apple" href="#" target="_blank" class="platform-link">
+          <div class="platform-logo">
+            <img src="img/Apple_Music_icon.png" alt="Apple Music" style="width:28px;height:28px;object-fit:contain;display:block;" />
+          </div>
+          <span class="platform-name">Apple Music</span>
+          <span class="platform-arrow">→</span>
+        </a>
+
+        <a id="modal-bandcamp" href="#" target="_blank" class="platform-link">
+          <div class="platform-logo">
+            <img src="img/Bandcamp_icon.png" alt="Bandcamp" style="width:28px;height:28px;object-fit:contain;display:block;" />
+          </div>
+          <span class="platform-name">Bandcamp</span>
+          <span class="platform-arrow">→</span>
+        </a>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-ticker">
+    <div class="footer-ticker-track">
+      <span class="footer-ticker-item">heavy-sweater.com</span><span class="footer-ticker-item">*</span>
+      <span class="footer-ticker-item">heavy-sweater.com</span><span class="footer-ticker-item">*</span>
+      <span class="footer-ticker-item">heavy-sweater.com</span><span class="footer-ticker-item">*</span>
+      <span class="footer-ticker-item">heavy-sweater.com</span><span class="footer-ticker-item">*</span>
+      <span class="footer-ticker-item">heavy-sweater.com</span><span class="footer-ticker-item">*</span>
+      <span class="footer-ticker-item">heavy-sweater.com</span><span class="footer-ticker-item">*</span>
+      <span class="footer-ticker-item">heavy-sweater.com</span><span class="footer-ticker-item">*</span>
+      <span class="footer-ticker-item">heavy-sweater.com</span><span class="footer-ticker-item">*</span>
+      <span class="footer-ticker-item">heavy-sweater.com</span><span class="footer-ticker-item">*</span>
+      <span class="footer-ticker-item">heavy-sweater.com</span><span class="footer-ticker-item">*</span>
+      <span class="footer-ticker-item">heavy-sweater.com</span><span class="footer-ticker-item">*</span>
+      <span class="footer-ticker-item">heavy-sweater.com</span><span class="footer-ticker-item">*</span>
+      <span class="footer-ticker-item">heavy-sweater.com</span><span class="footer-ticker-item">*</span>
+      <span class="footer-ticker-item">heavy-sweater.com</span><span class="footer-ticker-item">*</span>
+      <span class="footer-ticker-item">heavy-sweater.com</span><span class="footer-ticker-item">*</span>
+      <span class="footer-ticker-item">heavy-sweater.com</span><span class="footer-ticker-item">*</span>
+    </div>
+  </div>
+
+  <script>
+    function showSection(id) {
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+
+      // Update desktop nav active state
+      const navLinks = document.querySelectorAll('.site-nav .home-nav-link');
+      navLinks.forEach(btn => btn.style.opacity = (id === 'home') ? '1' : '0.3');
+      if (id !== 'home') {
+        const active = document.querySelector(`.site-nav .home-nav-link.${id}`);
+        if (active) active.style.opacity = '1';
+      }
+
+      // Update mobile header title
+      const titleEl = document.getElementById('mobile-page-title');
+      if (titleEl) titleEl.textContent = id === 'home' ? 'heavy sweater' : id;
+    }
+
+    function openModal(name, bandcamp, spotify, apple) {
+      document.getElementById('modal-album-name').textContent = name;
+      document.getElementById('modal-spotify').href = spotify;
+      document.getElementById('modal-apple').href = apple;
+      document.getElementById('modal-bandcamp').href = bandcamp;
+      document.getElementById('modal').classList.add('open');
+    }
+
+    function closeModal() {
+      document.getElementById('modal').classList.remove('open');
+    }
+
+    function closeModalOnOverlay(e) {
+      if (e.target === document.getElementById('modal')) closeModal();
+    }
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') closeModal();
+    });
+
+    // Remove past shows and show empty state if none remain
+    (function() {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const cards = document.querySelectorAll('#shows-grid .show-card[data-date]');
+      cards.forEach(card => {
+        const d = new Date(card.dataset.date + 'T00:00:00');
+        if (d < today) card.remove();
+      });
+      const remaining = document.querySelectorAll('#shows-grid .show-card');
+      if (remaining.length === 0) {
+        document.getElementById('shows-empty').style.display = 'block';
+      }
+    })();
+
+    function openMobileMenu() {
+      document.getElementById('mobile-menu').classList.add('open');
+    }
+
+    function closeMobileMenu() {
+      document.getElementById('mobile-menu').classList.remove('open');
+    }
+
+    function mobileNav(id) {
+      closeMobileMenu();
+      showSection(id);
+      window.scrollTo(0, 0);
+    }
+
+    function copyEmail() {
+      navigator.clipboard.writeText('hvyswtr@gmail.com');
+      const hint = document.getElementById('copy-hint');
+      hint.textContent = 'copied!';
+      setTimeout(() => { hint.textContent = 'click to copy'; }, 2000);
+    }
+  </script>
+
+</body>
+</html>

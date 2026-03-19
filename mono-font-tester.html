@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mono Font Tester — Heavy Sweater</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=IBM+Plex+Mono:wght@400;700&family=Roboto+Mono:wght@400;700&family=JetBrains+Mono:wght@400;700&family=Fira+Code:wght@400;700&family=Source+Code+Pro:wght@400;700&family=Inconsolata:wght@400;700&family=DM+Mono:wght@400;500&family=Martian+Mono:wght@400;700&family=Courier+Prime:wght@400;700&family=Share+Tech+Mono&family=Cutive+Mono&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #f0ede6;
+      color: #111;
+      font-family: sans-serif;
+    }
+
+    .page-header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: #111;
+      color: #f0ede6;
+      padding: 14px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 2px solid #333;
+    }
+
+    .page-header-title {
+      font-family: Helvetica, Arial, sans-serif;
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+
+    .page-header-hint {
+      font-family: Helvetica, Arial, sans-serif;
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      color: #888;
+      text-transform: uppercase;
+    }
+
+    .font-list { display: flex; flex-direction: column; }
+
+    .font-row {
+      border-bottom: 1px solid #d8d5ce;
+      padding: 36px 32px;
+      cursor: pointer;
+      transition: background 0.15s;
+      position: relative;
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      gap: 48px;
+      align-items: start;
+    }
+
+    .font-row:hover { background: #e8e5de; }
+
+    .font-row.selected {
+      background: #111;
+      color: #f0ede6;
+      border-bottom-color: #333;
+    }
+
+    .font-row.selected .font-meta-name { color: #f0ede6; }
+    .font-row.selected .font-meta-desc { color: #666; }
+    .font-row.selected .label { color: #555; }
+    .font-row.selected .selected-badge { display: block; }
+
+    .selected-badge {
+      display: none;
+      position: absolute;
+      top: 16px;
+      right: 32px;
+      font-family: Helvetica, Arial, sans-serif;
+      font-size: 0.6rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      background: #f0ede6;
+      color: #111;
+      padding: 4px 10px;
+    }
+
+    /* LEFT: font info */
+    .font-meta { display: flex; flex-direction: column; gap: 6px; padding-top: 4px; }
+
+    .font-meta-name {
+      font-family: Helvetica, Arial, sans-serif;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      color: #111;
+    }
+
+    .font-meta-desc {
+      font-family: Helvetica, Arial, sans-serif;
+      font-size: 0.62rem;
+      color: #999;
+      letter-spacing: 0.03em;
+      line-height: 1.5;
+    }
+
+    /* RIGHT: samples */
+    .font-samples { display: flex; flex-direction: column; gap: 20px; }
+
+    .sample-group { display: flex; flex-direction: column; gap: 6px; }
+
+    .label {
+      font-family: Helvetica, Arial, sans-serif;
+      font-size: 0.5rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #bbb;
+    }
+
+    /* large nav-style */
+    .sample-large { font-size: 1.1rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; }
+
+    /* body text */
+    .sample-body { font-size: 0.8rem; line-height: 1.7; }
+
+    /* small label */
+    .sample-small { font-size: 0.62rem; letter-spacing: 0.14em; text-transform: uppercase; }
+
+    /* ── Font families ── */
+    .f-space      { font-family: 'Space Mono', monospace; }
+    .f-ibm        { font-family: 'IBM Plex Mono', monospace; }
+    .f-roboto     { font-family: 'Roboto Mono', monospace; }
+    .f-jetbrains  { font-family: 'JetBrains Mono', monospace; }
+    .f-fira       { font-family: 'Fira Code', monospace; }
+    .f-source     { font-family: 'Source Code Pro', monospace; }
+    .f-inconsolata{ font-family: 'Inconsolata', monospace; }
+    .f-dm         { font-family: 'DM Mono', monospace; }
+    .f-martian    { font-family: 'Martian Mono', monospace; }
+    .f-courier    { font-family: 'Courier Prime', monospace; }
+    .f-sharetech  { font-family: 'Share Tech Mono', monospace; }
+    .f-cutive     { font-family: 'Cutive Mono', monospace; }
+  </style>
+</head>
+<body>
+
+<div class="page-header">
+  <span class="page-header-title">Mono Font Tester — Heavy Sweater</span>
+  <span class="page-header-hint">Click a font to select it</span>
+</div>
+
+<div class="font-list">
+
+  <!-- SPACE MONO -->
+  <div class="font-row f-space" onclick="select(this)">
+    <div class="selected-badge">✓ Selected</div>
+    <div class="font-meta">
+      <div class="font-meta-name">Space Mono</div>
+      <div class="font-meta-desc">Quirky, retrofuturist.<br>Great character.</div>
+    </div>
+    <div class="font-samples">
+      <div class="sample-group">
+        <div class="label">Nav / UI</div>
+        <div class="sample-large f-space">Merch &nbsp; Shows &nbsp; Listen</div>
+      </div>
+      <div class="sample-group">
+        <div class="label">Body</div>
+        <div class="sample-body f-space">Doug Fir Lounge — Portland, OR &nbsp;·&nbsp; Apr 12, 2026<br>100% cotton · Unisex fit · Available S – 2XL</div>
+      </div>
+      <div class="sample-group">
+        <div class="label">Label</div>
+        <div class="sample-small f-space">Upcoming Shows &nbsp;·&nbsp; Est. 2022</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- IBM PLEX MONO -->
+  <div class="font-row f-ibm" onclick="select(this)">
+    <div class="selected-badge">✓ Selected</div>
+    <div class="font-meta">
+      <div class="font-meta-name">IBM Plex Mono</div>
+      <div class="font-meta-desc">Clean, corporate-cool.<br>Very readable.</div>
+    </div>
+    <div class="font-samples">
+      <div class="sample-group">
+        <div class="label">Nav / UI</div>
+        <div class="sample-large f-ibm">Merch &nbsp; Shows &nbsp; Listen</div>
+      </div>
+      <div class="sample-group">
+        <div class="label">Body</div>
+        <div class="sample-body f-ibm">Doug Fir Lounge — Portland, OR &nbsp;·&nbsp; Apr 12, 2026<br>100% cotton · Unisex fit · Available S – 2XL</div>
+      </div>
+      <div class="sample-group">
+        <div class="label">Label</div>
+        <div class="sample-small f-ibm">Upcoming Shows &nbsp;·&nbsp; Est. 2022</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROBOTO MONO -->
+  <div class="font-row f-roboto" onclick="select(this)">
+    <div class="selected-badge">✓ Selected</div>
+    <div class="font-meta">
+      <div class="font-meta-name">Roboto Mono</div>
+      <div class="font-meta-desc">Neutral, workhorse.<br>Super legible.</div>
+    </div>
+    <div class="font-samples">
+      <div class="sample-group">
+        <div class="label">Nav / UI</div>
+        <div class="sample-large f-roboto">Merch &nbsp; Shows &nbsp; Listen</div>
+      </div>
+      <div class="sample-group">
+        <div class="label">Body</div>
+        <div class="sample-body f-roboto">Doug Fir Lounge — Portland, OR &nbsp;·&nbsp; Apr 12, 2026<br>100% cotton · Unisex fit · Available S – 2XL</div>
+      </div>
+      <div class="sample-group">
+        <div class="label">Label</div>
+        <div class="sample-small f-roboto">Upcoming Shows &nbsp;·&nbsp; Est. 2022</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JETBRAINS MONO -->
+  <div class="font-row f-jetbrains" onclick="select(this)">
+    <div class="selected-badge">✓ Selected</div>
+    <div class="font-meta">
+      <div class="font-meta-name">JetBrains Mono</div>
+      <div class="font-meta-desc">Technical, modern.<br>Tall x-height.</div>
+    </div>
+    <div class="font-samples">
+      <div class="sample-group">
+        <div class="label">Nav / UI</div>
+        <div class="sample-large f-jetbrains">Merch &nbsp; Shows &nbsp; Listen</div>
+      </div>
+      <div class="sample-group">
+        <div class="label">Body</div>
+        <div class="sample-body f-jetbrains">Doug Fir Lounge — Portland, OR &nbsp;·&nbsp; Apr 12, 2026<br>100% cotton · Unisex fit · Available S – 2XL</div>
+      </div>
+      <div class="sample-group">
+        <div class="label">Label</div>
+        <div class="sample-small f-jetbrains">Upcoming Shows &nbsp;·&nbsp; Est. 2022</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FIRA CODE -->
+  <div class="font-row f-fira" onclick="select(this)">
+    <div class="selected-badge">✓ Selected</div>
+    <div class="font-meta">
+      <div class="font-meta-name">Fira Code</div>
+      <div class="font-meta-desc">Rounded, friendly.<br>Slightly humanist.</div>
+    </div>
+    <div class="font-samples">
+      <div class="sample-group">
+        <div class="label">Nav / UI</div>
+        <div class="sample-large f-fira">Merch &nbsp; Shows &nbsp; Listen</div>
+      </div>
+      <div class="sample-group">
+        <div class="label">Body</div>
+        <div class="sample-body f-fira">Doug Fir Lounge — Portland, OR &nbsp;·&nbsp; Apr 12, 2026<br>100% cotton · Unisex fit · Available S – 2XL</div>
+      </div>
+      <div class="sample-group">
+        <div class="label">Label</div>
+        <div class="sample-small f-fira">Upcoming Shows &nbsp;·&nbsp; Est. 2022</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DM MONO -->
+  <div class="font-row f-dm" onclick="select(this)">
+    <div class="selected-badge">✓ Selected</div>
+    <div class="font-meta">
+      <div class="font-meta-name">DM Mono</div>
+      <div class="font-meta-desc">Editorial, refined.<br>Clean &amp; minimal.</div>
+    </div>
+    <div class="font-samples">
+      <div class="sample-group">
+        <div class="label">Nav / UI</div>
+        <div class="sample-large f-dm">Merch &nbsp; Shows &nbsp; Listen</div>
+      </div>
+      <div class="sample-group">
+        <div class="label">Body</div>
+        <div class="sample-body f-dm">Doug Fir Lounge — Portland, OR &nbsp;·&nbsp; Apr 12, 2026<br>100% cotton · Unisex fit · Available S – 2XL</div>
+      </div>
+      <div class="sample-group">
+        <div class="label">Label</div>
+        <div class="sample-small f-dm">Upcoming Shows &nbsp;·&nbsp; Est. 2022</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MARTIAN MONO -->
+  <div class="font-row f-martian" onclick="select(this)">
+    <div class="selected-badge">✓ Selected</div>
+    <div class="font-meta">
+      <div class="font-meta-name">Martian Mono</div>
+      <div class="font-meta-desc">Wide, spacious.<br>Very distinct.</div>
+    </div>
+    <div class="font-samples">
+      <div class="sample-group">
+        <div class="label">Nav / UI</div>
+        <div class="sample-large f-martian">Merch &nbsp; Shows &nbsp; Listen</div>
+      </div>
+      <div class="sample-group">
+        <div class="label">Body</div>
+        <div class="sample-body f-martian">Doug Fir Lounge — Portland, OR &nbsp;·&nbsp; Apr 12, 2026<br>100% cotton · Unisex fit · Available S – 2XL</div>
+      </div>
+      <div class="sample-group">
+        <div class="label">Label</div>
+        <div class="sample-small f-martian">Upcoming Shows &nbsp;·&nbsp; Est. 2022</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COURIER PRIME -->
+  <div class="font-row f-courier" onclick="select(this)">
+    <div class="selected-badge">✓ Selected</div>
+    <div class="font-meta">
+      <div class="font-meta-name">Courier Prime</div>
+      <div class="font-meta-desc">Typewriter, vintage.<br>Raw &amp; warm.</div>
+    </div>
+    <div class="font-samples">
+      <div class="sample-group">
+        <div class="label">Nav / UI</div>
+        <div class="sample-large f-courier">Merch &nbsp; Shows &nbsp; Listen</div>
+      </div>
+      <div class="sample-group">
+        <div class="label">Body</div>
+        <div class="sample-body f-courier">Doug Fir Lounge — Portland, OR &nbsp;·&nbsp; Apr 12, 2026<br>100% cotton · Unisex fit · Available S – 2XL</div>
+      </div>
+      <div class="sample-group">
+        <div class="label">Label</div>
+        <div class="sample-small f-courier">Upcoming Shows &nbsp;·&nbsp; Est. 2022</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SHARE TECH MONO -->
+  <div class="font-row f-sharetech" onclick="select(this)">
+    <div class="selected-badge">✓ Selected</div>
+    <div class="font-meta">
+      <div class="font-meta-name">Share Tech Mono</div>
+      <div class="font-meta-desc">Terminal, minimal.<br>No-frills digital.</div>
+    </div>
+    <div class="font-samples">
+      <div class="sample-group">
+        <div class="label">Nav / UI</div>
+        <div class="sample-large f-sharetech">Merch &nbsp; Shows &nbsp; Listen</div>
+      </div>
+      <div class="sample-group">
+        <div class="label">Body</div>
+        <div class="sample-body f-sharetech">Doug Fir Lounge — Portland, OR &nbsp;·&nbsp; Apr 12, 2026<br>100% cotton · Unisex fit · Available S – 2XL</div>
+      </div>
+      <div class="sample-group">
+        <div class="label">Label</div>
+        <div class="sample-small f-sharetech">Upcoming Shows &nbsp;·&nbsp; Est. 2022</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CUTIVE MONO -->
+  <div class="font-row f-cutive" onclick="select(this)">
+    <div class="selected-badge">✓ Selected</div>
+    <div class="font-meta">
+      <div class="font-meta-name">Cutive Mono</div>
+      <div class="font-meta-desc">Old typewriter.<br>Grungy &amp; editorial.</div>
+    </div>
+    <div class="font-samples">
+      <div class="sample-group">
+        <div class="label">Nav / UI</div>
+        <div class="sample-large f-cutive">Merch &nbsp; Shows &nbsp; Listen</div>
+      </div>
+      <div class="sample-group">
+        <div class="label">Body</div>
+        <div class="sample-body f-cutive">Doug Fir Lounge — Portland, OR &nbsp;·&nbsp; Apr 12, 2026<br>100% cotton · Unisex fit · Available S – 2XL</div>
+      </div>
+      <div class="sample-group">
+        <div class="label">Label</div>
+        <div class="sample-small f-cutive">Upcoming Shows &nbsp;·&nbsp; Est. 2022</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  function select(row) {
+    document.querySelectorAll('.font-row').forEach(r => r.classList.remove('selected'));
+    row.classList.add('selected');
+    row.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+</script>
+
+</body>
+</html>

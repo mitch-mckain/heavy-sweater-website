@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Font Tester — Heavy Sweater</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Anton&family=Big+Shoulders+Display:wght@900&family=Unbounded:wght@900&family=Syne:wght@800&family=Archivo+Black&family=Ultra&family=Alfa+Slab+One&family=Black+Ops+One&family=Oswald:wght@700&family=Barlow+Condensed:wght@900&family=Secular+One&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Archivo Black', sans-serif;
+      background: #f0ede6;
+      color: #111;
+    }
+
+    .page-header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: #111;
+      color: #f0ede6;
+      padding: 14px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 2px solid #333;
+    }
+
+    .page-header-title {
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+
+    .page-header-hint {
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      color: #888;
+      text-transform: uppercase;
+    }
+
+    .font-list {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .font-row {
+      border-bottom: 1px solid #d8d5ce;
+      padding: 40px 32px 32px;
+      cursor: pointer;
+      transition: background 0.15s;
+      position: relative;
+    }
+
+    .font-row:hover { background: #e8e5de; }
+
+    .font-row.selected {
+      background: #111;
+      color: #f0ede6;
+      border-bottom-color: #333;
+    }
+
+    .font-row.selected .font-meta { color: #888; }
+    .font-row.selected .selected-badge { display: block; }
+
+    .selected-badge {
+      display: none;
+      position: absolute;
+      top: 16px;
+      right: 32px;
+      font-size: 0.6rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      background: #f0ede6;
+      color: #111;
+      padding: 4px 10px;
+    }
+
+    .font-meta {
+      font-family: 'Archivo Black', sans-serif;
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #999;
+      margin-bottom: 12px;
+    }
+
+    .font-sample {
+      font-size: clamp(3.5rem, 9vw, 9vw);
+      line-height: 0.88;
+      text-transform: uppercase;
+    }
+
+    /* ── Individual fonts ── */
+    .f-bebas       { font-family: 'Bebas Neue', sans-serif; }
+    .f-anton        { font-family: 'Anton', sans-serif; }
+    .f-bigshoulders { font-family: 'Big Shoulders Display', sans-serif; font-weight: 900; }
+    .f-unbounded    { font-family: 'Unbounded', sans-serif; font-weight: 900; font-size: clamp(2rem, 5.5vw, 5.5vw); }
+    .f-syne         { font-family: 'Syne', sans-serif; font-weight: 800; }
+    .f-archivo      { font-family: 'Archivo Black', sans-serif; }
+    .f-ultra        { font-family: 'Ultra', serif; }
+    .f-alfaslab     { font-family: 'Alfa Slab One', serif; }
+    .f-blackops     { font-family: 'Black Ops One', sans-serif; }
+    .f-oswald       { font-family: 'Oswald', sans-serif; font-weight: 700; }
+    .f-barlow       { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; }
+    .f-secular      { font-family: 'Secular One', sans-serif; }
+  </style>
+</head>
+<body>
+
+<div class="page-header">
+  <span class="page-header-title">Font Tester — Heavy Sweater</span>
+  <span class="page-header-hint">Click a font to select it</span>
+</div>
+
+<div class="font-list">
+
+  <div class="font-row" onclick="select(this)">
+    <div class="selected-badge">✓ Selected</div>
+    <div class="font-meta">Bebas Neue — Condensed sans-serif</div>
+    <div class="font-sample f-bebas">Heavy Sweater</div>
+  </div>
+
+  <div class="font-row" onclick="select(this)">
+    <div class="selected-badge">✓ Selected</div>
+    <div class="font-meta">Anton — Heavy condensed</div>
+    <div class="font-sample f-anton">Heavy Sweater</div>
+  </div>
+
+  <div class="font-row" onclick="select(this)">
+    <div class="selected-badge">✓ Selected</div>
+    <div class="font-meta">Big Shoulders Display — Tall &amp; narrow</div>
+    <div class="font-sample f-bigshoulders">Heavy Sweater</div>
+  </div>
+
+  <div class="font-row" onclick="select(this)">
+    <div class="selected-badge">✓ Selected</div>
+    <div class="font-meta">Unbounded — Wide &amp; imposing</div>
+    <div class="font-sample f-unbounded">Heavy<br>Sweater</div>
+  </div>
+
+  <div class="font-row" onclick="select(this)">
+    <div class="selected-badge">✓ Selected</div>
+    <div class="font-meta">Syne — Design-forward grotesque</div>
+    <div class="font-sample f-syne">Heavy Sweater</div>
+  </div>
+
+  <div class="font-row" onclick="select(this)">
+    <div class="selected-badge">✓ Selected</div>
+    <div class="font-meta">Archivo Black — Heavy grotesque</div>
+    <div class="font-sample f-archivo">Heavy Sweater</div>
+  </div>
+
+  <div class="font-row" onclick="select(this)">
+    <div class="selected-badge">✓ Selected</div>
+    <div class="font-meta">Ultra — Massive serif</div>
+    <div class="font-sample f-ultra">Heavy Sweater</div>
+  </div>
+
+  <div class="font-row" onclick="select(this)">
+    <div class="selected-badge">✓ Selected</div>
+    <div class="font-meta">Alfa Slab One — Bold slab serif</div>
+    <div class="font-sample f-alfaslab">Heavy Sweater</div>
+  </div>
+
+  <div class="font-row" onclick="select(this)">
+    <div class="selected-badge">✓ Selected</div>
+    <div class="font-meta">Black Ops One — Stencil / military</div>
+    <div class="font-sample f-blackops">Heavy Sweater</div>
+  </div>
+
+  <div class="font-row" onclick="select(this)">
+    <div class="selected-badge">✓ Selected</div>
+    <div class="font-meta">Oswald — Classic condensed</div>
+    <div class="font-sample f-oswald">Heavy Sweater</div>
+  </div>
+
+  <div class="font-row" onclick="select(this)">
+    <div class="selected-badge">✓ Selected</div>
+    <div class="font-meta">Barlow Condensed — Clean &amp; punchy</div>
+    <div class="font-sample f-barlow">Heavy Sweater</div>
+  </div>
+
+  <div class="font-row" onclick="select(this)">
+    <div class="selected-badge">✓ Selected</div>
+    <div class="font-meta">Secular One — Rounded bold</div>
+    <div class="font-sample f-secular">Heavy Sweater</div>
+  </div>
+
+</div>
+
+<script>
+  function select(row) {
+    document.querySelectorAll('.font-row').forEach(r => r.classList.remove('selected'));
+    row.classList.add('selected');
+    row.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+</script>
+
+</body>
+</html>
