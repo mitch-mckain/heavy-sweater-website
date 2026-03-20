@@ -21,6 +21,43 @@ const PRODUCTS = {
   },
 };
 
+// Flat shipping rates in CAD cents
+const SHIPPING_OPTIONS = [
+  {
+    shipping_rate_data: {
+      type: 'fixed_amount',
+      fixed_amount: { amount: 1200, currency: 'cad' },
+      display_name: 'Canada Standard Shipping',
+      delivery_estimate: {
+        minimum: { unit: 'business_day', value: 5 },
+        maximum: { unit: 'business_day', value: 10 },
+      },
+    },
+  },
+  {
+    shipping_rate_data: {
+      type: 'fixed_amount',
+      fixed_amount: { amount: 2000, currency: 'cad' },
+      display_name: 'USA Standard Shipping',
+      delivery_estimate: {
+        minimum: { unit: 'business_day', value: 7 },
+        maximum: { unit: 'business_day', value: 14 },
+      },
+    },
+  },
+  {
+    shipping_rate_data: {
+      type: 'fixed_amount',
+      fixed_amount: { amount: 3500, currency: 'cad' },
+      display_name: 'International Standard Shipping',
+      delivery_estimate: {
+        minimum: { unit: 'business_day', value: 10 },
+        maximum: { unit: 'business_day', value: 21 },
+      },
+    },
+  },
+];
+
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
@@ -51,8 +88,9 @@ module.exports = async function handler(req, res) {
       ],
       mode: 'payment',
       shipping_address_collection: {
-        allowed_countries: ['CA', 'US', 'GB', 'AU'],
+        allowed_countries: ['CA', 'US', 'GB', 'AU', 'NZ', 'DE', 'FR', 'NL', 'SE', 'NO'],
       },
+      shipping_options: SHIPPING_OPTIONS,
       custom_fields: [
         {
           key: 'size',
