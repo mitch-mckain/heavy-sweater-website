@@ -1,27 +1,32 @@
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const { Redis } = require('@upstash/redis');
+
+const redis = new Redis({
+  url: process.env.KV_REST_API_URL,
+  token: process.env.KV_REST_API_TOKEN,
+});
 
 const PRODUCTS = {
   hoodie: {
     name: 'Heavy Sweater Hoodie',
-    price: 5000, // CAD cents
+    price: 5500,
     image: 'https://heavy-sweater.com/img/Sweater-mock.jpg',
     sizes: ['M', 'L', 'XL', 'XXL'],
   },
   devil_tshirt: {
     name: 'Green Devil T-Shirt',
-    price: 2500,
+    price: 2800,
     image: 'https://heavy-sweater.com/img/Devil_Tshirt.jpg',
     sizes: ['S', 'M', 'L'],
   },
   stretcher_tshirt: {
     name: 'Stretcher T-Shirt',
-    price: 2500,
+    price: 2800,
     image: 'https://heavy-sweater.com/img/Stretcher.jpg',
     sizes: ['S', 'M', 'L', 'XL', 'XXL', 'XXXL'],
   },
 };
 
-// Flat shipping rates in CAD cents
 const SHIPPING_OPTIONS = [
   {
     shipping_rate_data: {
@@ -63,11 +68,24 @@ module.exports = async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { productId } = req.body;
+  const { productId, size } = req.body;
   const product = PRODUCTS[productId];
 
-  if (!product) {
-    return res.status(400).json({ error: 'Invalid product' });
+  if (!product || !size) {
+    return res.status(400).json({ error: 'Invalid product or missing size' });
+  }
+
+  if (!product.sizes.includes(size)) {
+    return res.status(400).json({ error: 'Invalid size' });
+  }
+
+  // Check inventory
+  const inventoryKey = `inv:${productId}:${size}`;
+  const stock = await redis.get(inventoryKey);
+  const stockCount = parseInt(stock ?? '0', 10);
+
+  if (stockCount <= 0) {
+    return res.status(200).json({ soldOut: true });
   }
 
   try {
@@ -78,7 +96,7 @@ module.exports = async function handler(req, res) {
           price_data: {
             currency: 'cad',
             product_data: {
-              name: product.name,
+              name: `${product.name} — Size ${size}`,
               images: [product.image],
             },
             unit_amount: product.price,
@@ -91,16 +109,10 @@ module.exports = async function handler(req, res) {
         allowed_countries: ['CA', 'US', 'GB', 'AU', 'NZ', 'DE', 'FR', 'NL', 'SE', 'NO'],
       },
       shipping_options: SHIPPING_OPTIONS,
-      custom_fields: [
-        {
-          key: 'size',
-          label: { type: 'custom', custom: 'Size' },
-          type: 'dropdown',
-          dropdown: {
-            options: product.sizes.map(s => ({ label: s, value: s.toLowerCase() })),
-          },
-        },
-      ],
+      metadata: {
+        productId,
+        size,
+      },
       success_url: `${req.headers.origin}/?order=success`,
       cancel_url: `${req.headers.origin}/?order=canceled`,
     });

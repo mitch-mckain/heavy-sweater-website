@@ -2,6 +2,7 @@
   "name": "heavy-sweater-website",
   "version": "1.0.0",
   "dependencies": {
-    "stripe": "^14.0.0"
+    "stripe": "^14.0.0",
+    "@upstash/redis": "^1.34.0"
   }
 }

@@ -972,30 +972,30 @@
       <p class="section-title">Merch</p>
       <div class="merch-grid">
         <div class="merch-card">
-          <span class="merch-price-tag">$50</span>
+          <span class="merch-price-tag">$55</span>
           <img class="merch-img" src="img/Sweater-mock.jpg" alt="Heavy Sweater Hoodie" />
           <div class="merch-card-info">
             <div class="merch-name">Heavy Sweater Hoodie</div>
             <div class="merch-desc">M, L, XL, XXL</div>
-            <button class="btn filled" onclick="buyNow('hoodie', this)">Buy Now</button>
+            <button class="btn filled" onclick="buyNow('hoodie')">Buy Now</button>
           </div>
         </div>
         <div class="merch-card">
-          <span class="merch-price-tag">$25</span>
+          <span class="merch-price-tag">$28</span>
           <img class="merch-img" src="img/Devil_Tshirt.jpg" alt="Green Devil T-Shirt" />
           <div class="merch-card-info">
             <div class="merch-name">Green Devil T-Shirt</div>
             <div class="merch-desc">S, M, L</div>
-            <button class="btn filled" onclick="buyNow('devil_tshirt', this)">Buy Now</button>
+            <button class="btn filled" onclick="buyNow('devil_tshirt')">Buy Now</button>
           </div>
         </div>
         <div class="merch-card">
-          <span class="merch-price-tag">$25</span>
+          <span class="merch-price-tag">$28</span>
           <img class="merch-img" src="img/Stretcher.jpg" alt="Stretcher T-Shirt" />
           <div class="merch-card-info">
             <div class="merch-name">Stretcher T-Shirt</div>
             <div class="merch-desc">S, M, L, XL, XXL, XXXL</div>
-            <button class="btn filled" onclick="buyNow('stretcher_tshirt', this)">Buy Now</button>
+            <button class="btn filled" onclick="buyNow('stretcher_tshirt')">Buy Now</button>
           </div>
         </div>
       </div>
@@ -1118,6 +1118,20 @@
     <button class="home-nav-link about"   onclick="showSection('about')">about</button>
     <button class="home-nav-link contact" onclick="showSection('contact')">contact</button>
   </nav>
+
+  <!-- SIZE PICKER MODAL -->
+  <div class="modal-overlay" id="size-modal" onclick="closeSizeModalOnOverlay(event)">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title-block">
+          <div class="modal-album-name" id="size-modal-name"></div>
+          <div class="modal-prompt">Select a size</div>
+        </div>
+        <button class="modal-close" onclick="closeSizeModal()">✕</button>
+      </div>
+      <div id="size-options" style="display:flex;flex-wrap:wrap;gap:10px;margin-top:4px;"></div>
+    </div>
+  </div>
 
   <!-- MODAL -->
   <div class="modal-overlay" id="modal" onclick="closeModalOnOverlay(event)">
@@ -1255,24 +1269,65 @@
     }
 
     // ── STRIPE CHECKOUT ──────────────────────────────────
-    async function buyNow(productId, btn) {
-      const original = btn.textContent;
-      btn.textContent = 'Loading...';
+    const PRODUCT_SIZES = {
+      hoodie:           ['M', 'L', 'XL', 'XXL'],
+      devil_tshirt:     ['S', 'M', 'L'],
+      stretcher_tshirt: ['S', 'M', 'L', 'XL', 'XXL', 'XXXL'],
+    };
+    const PRODUCT_NAMES = {
+      hoodie:           'Heavy Sweater Hoodie',
+      devil_tshirt:     'Green Devil T-Shirt',
+      stretcher_tshirt: 'Stretcher T-Shirt',
+    };
+
+    let _pendingProductId = null;
+
+    function buyNow(productId) {
+      _pendingProductId = productId;
+      document.getElementById('size-modal-name').textContent = PRODUCT_NAMES[productId];
+      const container = document.getElementById('size-options');
+      container.innerHTML = '';
+      PRODUCT_SIZES[productId].forEach(size => {
+        const btn = document.createElement('button');
+        btn.className = 'btn';
+        btn.textContent = size;
+        btn.style.minWidth = '64px';
+        btn.onclick = () => proceedToCheckout(productId, size, btn);
+        container.appendChild(btn);
+      });
+      document.getElementById('size-modal').classList.add('open');
+    }
+
+    function closeSizeModal() {
+      document.getElementById('size-modal').classList.remove('open');
+      _pendingProductId = null;
+    }
+
+    function closeSizeModalOnOverlay(e) {
+      if (e.target === document.getElementById('size-modal')) closeSizeModal();
+    }
+
+    async function proceedToCheckout(productId, size, btn) {
+      btn.textContent = '...';
       btn.disabled = true;
       try {
         const res = await fetch('/api/checkout', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ productId }),
+          body: JSON.stringify({ productId, size }),
         });
         const data = await res.json();
         if (data.url) {
           window.location.href = data.url;
+        } else if (data.soldOut) {
+          btn.textContent = 'Sold Out';
+          btn.disabled = true;
+          btn.style.opacity = '0.4';
         } else {
           throw new Error(data.error || 'Something went wrong');
         }
       } catch (e) {
-        btn.textContent = original;
+        btn.textContent = size;
         btn.disabled = false;
         alert('Could not start checkout. Please try again.');
       }
