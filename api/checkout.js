@@ -93,13 +93,13 @@ module.exports = async function handler(req, res) {
   }
 
   // Validate all items and check inventory before creating the session
-  for (const { productId, size } of items) {
+  for (const { productId, size, qty = 1 } of items) {
     const product = PRODUCTS[productId];
     if (!product) return res.status(400).json({ error: `Unknown product: ${productId}` });
     if (!product.sizes.includes(size)) return res.status(400).json({ error: `Invalid size ${size} for ${productId}` });
 
     const stock = await redis.get(`inv:${productId}:${size}`);
-    if (parseInt(stock ?? '0', 10) <= 0) {
+    if (parseInt(stock ?? '0', 10) < qty) {
       return res.status(200).json({
         soldOut: true,
         soldOutName: product.name,
@@ -109,7 +109,7 @@ module.exports = async function handler(req, res) {
   }
 
   // Build Stripe line items
-  const line_items = items.map(({ productId, size }) => {
+  const line_items = items.map(({ productId, size, qty = 1 }) => {
     const product = PRODUCTS[productId];
     return {
       price_data: {
@@ -120,7 +120,7 @@ module.exports = async function handler(req, res) {
         },
         unit_amount: product.price,
       },
-      quantity: 1,
+      quantity: qty,
     };
   });
 

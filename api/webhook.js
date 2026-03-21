@@ -46,11 +46,11 @@ module.exports = async function handler(req, res) {
       let items;
       try { items = JSON.parse(itemsJson); } catch (e) { items = []; }
 
-      for (const { productId, size } of items) {
+      for (const { productId, size, qty = 1 } of items) {
         if (!productId || !size) continue;
         const inventoryKey = `inv:${productId}:${size}`;
-        const newStock = await redis.decr(inventoryKey);
-        console.log(`Inventory decremented: ${inventoryKey} → ${newStock}`);
+        const newStock = await redis.decrby(inventoryKey, qty);
+        console.log(`Inventory decremented: ${inventoryKey} by ${qty} → ${newStock}`);
         if (newStock < 0) await redis.set(inventoryKey, 0);
       }
     }
