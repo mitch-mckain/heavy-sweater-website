@@ -344,7 +344,7 @@
       grid-template-columns: repeat(3, 1fr);
       gap: 16px;
       width: 100%;
-      max-width: none;
+      max-width: 960px;
       flex: 0 0 auto;
     }
 
@@ -402,13 +402,11 @@
     .merch-img {
       width: 100%;
       aspect-ratio: 1 / 1;
+      max-height: 42vh;
       object-fit: cover;
       display: block;
       border-bottom: 1px solid var(--border);
-      cursor: zoom-in;
-      transition: opacity 0.15s;
     }
-    .merch-img:hover { opacity: 0.88; }
 
     /* Merch lightbox */
     #merch-lightbox {

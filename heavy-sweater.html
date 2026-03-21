@@ -6,6 +6,7 @@
   <title>Heavy Sweater</title>
   <link rel="icon" type="image/svg+xml" href="img/favicon.svg" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700;900&family=Fira+Code:wght@400;700&family=Jacquard+12+Charted&display=swap" rel="stylesheet" />
+  <script defer src="/_vercel/insights/script.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -343,7 +344,7 @@
       grid-template-columns: repeat(3, 1fr);
       gap: 16px;
       width: 100%;
-      max-width: none;
+      max-width: 960px;
       flex: 0 0 auto;
     }
 
@@ -401,10 +402,45 @@
     .merch-img {
       width: 100%;
       aspect-ratio: 1 / 1;
+      max-height: 42vh;
       object-fit: cover;
       display: block;
       border-bottom: 1px solid var(--border);
     }
+
+    /* Merch lightbox */
+    #merch-lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: rgba(26,25,23,0.85);
+      align-items: center;
+      justify-content: center;
+      cursor: zoom-out;
+    }
+    #merch-lightbox.open { display: flex; }
+    #merch-lightbox img {
+      max-width: min(90vw, 700px);
+      max-height: 85vh;
+      object-fit: contain;
+      display: block;
+      box-shadow: 0 8px 60px rgba(0,0,0,0.5);
+    }
+    #merch-lightbox-close {
+      position: absolute;
+      top: 20px;
+      right: 24px;
+      background: none;
+      border: none;
+      color: #faf9f7;
+      font-size: 2rem;
+      line-height: 1;
+      cursor: pointer;
+      font-family: 'Fira Code', monospace;
+      opacity: 0.7;
+    }
+    #merch-lightbox-close:hover { opacity: 1; }
 
     .merch-name {
       font-size: 1.1rem;
@@ -973,7 +1009,7 @@
       <div class="merch-grid">
         <div class="merch-card">
           <span class="merch-price-tag">$55</span>
-          <img class="merch-img" src="img/Sweater-mock.jpg" alt="Heavy Sweater Hoodie" />
+          <img class="merch-img" src="img/Sweater-mock.jpg" alt="Heavy Sweater Hoodie" onclick="openMerchLightbox(this)" />
           <div class="merch-card-info">
             <div class="merch-name">Heavy Sweater Hoodie</div>
             <div class="merch-desc">M, L, XL, XXL</div>
@@ -982,7 +1018,7 @@
         </div>
         <div class="merch-card">
           <span class="merch-price-tag">$28</span>
-          <img class="merch-img" src="img/Devil_Tshirt.jpg" alt="Green Devil T-Shirt" />
+          <img class="merch-img" src="img/Devil_Tshirt.jpg" alt="Green Devil T-Shirt" onclick="openMerchLightbox(this)" />
           <div class="merch-card-info">
             <div class="merch-name">Green Devil T-Shirt</div>
             <div class="merch-desc">S, M, L</div>
@@ -991,7 +1027,7 @@
         </div>
         <div class="merch-card">
           <span class="merch-price-tag">$28</span>
-          <img class="merch-img" src="img/Stretcher.jpg" alt="Stretcher T-Shirt" />
+          <img class="merch-img" src="img/Stretcher.jpg" alt="Stretcher T-Shirt" onclick="openMerchLightbox(this)" />
           <div class="merch-card-info">
             <div class="merch-name">Stretcher T-Shirt</div>
             <div class="merch-desc">S, M, L, XL, XXL, XXXL</div>
@@ -1399,6 +1435,28 @@
 
       grain();
     })();
+  </script>
+
+  <!-- Merch lightbox -->
+  <div id="merch-lightbox" onclick="closeMerchLightbox()">
+    <button id="merch-lightbox-close" onclick="closeMerchLightbox()" aria-label="Close">✕</button>
+    <img id="merch-lightbox-img" src="" alt="" onclick="event.stopPropagation()" />
+  </div>
+
+  <script>
+    function openMerchLightbox(imgEl) {
+      const lb = document.getElementById('merch-lightbox');
+      const lbImg = document.getElementById('merch-lightbox-img');
+      lbImg.src = imgEl.src;
+      lbImg.alt = imgEl.alt;
+      lb.classList.add('open');
+    }
+    function closeMerchLightbox() {
+      document.getElementById('merch-lightbox').classList.remove('open');
+    }
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') closeMerchLightbox();
+    });
   </script>
 
 </body>
