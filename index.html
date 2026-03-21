@@ -344,7 +344,7 @@
       grid-template-columns: repeat(3, 1fr);
       gap: 16px;
       width: 100%;
-      max-width: 960px;
+      max-width: calc(135vh + 32px); /* 3 cols × 45vh max + 2 gaps */
       flex: 0 0 auto;
     }
 
@@ -354,7 +354,7 @@
     }
 
     #merch .section-title {
-      flex-shrink: 0;
+      display: none;
     }
 
     .merch-card {
@@ -402,7 +402,6 @@
     .merch-img {
       width: 100%;
       aspect-ratio: 1 / 1;
-      max-height: 42vh;
       object-fit: cover;
       display: block;
       border-bottom: 1px solid var(--border);
