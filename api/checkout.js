@@ -27,48 +27,61 @@ const PRODUCTS = {
   },
 };
 
-const SHIPPING_OPTIONS = [
-  {
-    shipping_rate_data: {
-      type: 'fixed_amount',
-      fixed_amount: { amount: 1200, currency: 'cad' },
-      display_name: 'Canada Standard Shipping',
-      delivery_estimate: {
-        minimum: { unit: 'business_day', value: 5 },
-        maximum: { unit: 'business_day', value: 10 },
+const SHIPPING = {
+  canada: {
+    option: {
+      shipping_rate_data: {
+        type: 'fixed_amount',
+        fixed_amount: { amount: 1200, currency: 'cad' },
+        display_name: 'Canada Standard Shipping',
+        delivery_estimate: {
+          minimum: { unit: 'business_day', value: 5 },
+          maximum: { unit: 'business_day', value: 10 },
+        },
       },
     },
+    allowed_countries: ['CA'],
   },
-  {
-    shipping_rate_data: {
-      type: 'fixed_amount',
-      fixed_amount: { amount: 2000, currency: 'cad' },
-      display_name: 'USA Standard Shipping',
-      delivery_estimate: {
-        minimum: { unit: 'business_day', value: 7 },
-        maximum: { unit: 'business_day', value: 14 },
+  usa: {
+    option: {
+      shipping_rate_data: {
+        type: 'fixed_amount',
+        fixed_amount: { amount: 1800, currency: 'cad' },
+        display_name: 'USA Standard Shipping',
+        delivery_estimate: {
+          minimum: { unit: 'business_day', value: 6 },
+          maximum: { unit: 'business_day', value: 12 },
+        },
       },
     },
+    allowed_countries: ['US'],
   },
-  {
-    shipping_rate_data: {
-      type: 'fixed_amount',
-      fixed_amount: { amount: 3500, currency: 'cad' },
-      display_name: 'International Standard Shipping',
-      delivery_estimate: {
-        minimum: { unit: 'business_day', value: 10 },
-        maximum: { unit: 'business_day', value: 21 },
+  international: {
+    option: {
+      shipping_rate_data: {
+        type: 'fixed_amount',
+        fixed_amount: { amount: 2800, currency: 'cad' },
+        display_name: 'International Standard Shipping',
+        delivery_estimate: {
+          minimum: { unit: 'business_day', value: 10 },
+          maximum: { unit: 'business_day', value: 21 },
+        },
       },
     },
+    allowed_countries: [
+      'GB', 'AU', 'NZ', 'DE', 'FR', 'NL', 'SE', 'NO', 'JP', 'IT',
+      'ES', 'BE', 'CH', 'AT', 'DK', 'FI', 'PT', 'IE', 'MX', 'BR',
+      'AR', 'HK', 'SG', 'KR', 'TW', 'IN', 'ZA', 'PL', 'CZ', 'HU',
+    ],
   },
-];
+};
 
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { productId, size } = req.body;
+  const { productId, size, region } = req.body;
   const product = PRODUCTS[productId];
 
   if (!product || !size) {
@@ -77,6 +90,11 @@ module.exports = async function handler(req, res) {
 
   if (!product.sizes.includes(size)) {
     return res.status(400).json({ error: 'Invalid size' });
+  }
+
+  const shipping = SHIPPING[region];
+  if (!shipping) {
+    return res.status(400).json({ error: 'Invalid region' });
   }
 
   // Check inventory
@@ -106,12 +124,13 @@ module.exports = async function handler(req, res) {
       ],
       mode: 'payment',
       shipping_address_collection: {
-        allowed_countries: ['CA', 'US', 'GB', 'AU', 'NZ', 'DE', 'FR', 'NL', 'SE', 'NO'],
+        allowed_countries: shipping.allowed_countries,
       },
-      shipping_options: SHIPPING_OPTIONS,
+      shipping_options: [shipping.option],
       metadata: {
         productId,
         size,
+        region,
       },
       success_url: `${req.headers.origin}/?order=success`,
       cancel_url: `${req.headers.origin}/?order=canceled`,

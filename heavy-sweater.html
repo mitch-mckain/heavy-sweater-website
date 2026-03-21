@@ -283,6 +283,13 @@
       padding: 24px 0;
     }
 
+    .hero-band-name {
+      font-size: 0.55rem;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-top: -40px;
+    }
+
     .hero-sub {
       font-size: 0.85rem;
       letter-spacing: 0.18em;
@@ -693,6 +700,26 @@
 
     .modal-close:hover { color: var(--fg); }
 
+    .region-picker {
+      display: flex;
+      gap: 8px;
+    }
+    .region-btn {
+      flex: 1;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.62rem;
+      letter-spacing: 0.04em;
+      padding: 8px 4px;
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.15s;
+      text-align: center;
+    }
+    .region-btn:hover { border-color: var(--fg); color: var(--fg); }
+    .region-btn.active { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+
     .modal-platforms {
       display: flex;
       flex-direction: column;
@@ -992,6 +1019,7 @@
     <!-- HOME -->
     <section class="section active" id="home">
       <h1 class="hero-title">Heavy<br>Sweater</h1>
+      <p class="hero-band-name">(heavy sweater)</p>
       <nav class="mobile-home-nav">
         <button class="home-nav-link shows"   onclick="showSection('shows')">shows</button>
         <button class="home-nav-link merch"   onclick="showSection('merch')">merch</button>
@@ -1165,6 +1193,14 @@
         <button class="modal-close" onclick="closeSizeModal()">✕</button>
       </div>
       <div id="size-options" style="display:flex;flex-wrap:wrap;gap:10px;margin-top:4px;"></div>
+      <div>
+        <div class="modal-prompt" style="margin-bottom:8px;">Ship to</div>
+        <div class="region-picker">
+          <button class="region-btn active" id="region-canada" onclick="selectRegion('canada')">🇨🇦 Canada</button>
+          <button class="region-btn" id="region-usa" onclick="selectRegion('usa')">🇺🇸 USA</button>
+          <button class="region-btn" id="region-international" onclick="selectRegion('international')">🌍 International</button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -1316,9 +1352,19 @@
     };
 
     let _pendingProductId = null;
+    let _selectedRegion = 'canada';
+
+    function selectRegion(region) {
+      _selectedRegion = region;
+      ['canada', 'usa', 'international'].forEach(r => {
+        document.getElementById('region-' + r).classList.toggle('active', r === region);
+      });
+    }
 
     function buyNow(productId) {
       _pendingProductId = productId;
+      // Reset region picker to Canada each time modal opens
+      selectRegion('canada');
       document.getElementById('size-modal-name').textContent = PRODUCT_NAMES[productId];
       const container = document.getElementById('size-options');
       container.innerHTML = '';
@@ -1349,7 +1395,7 @@
         const res = await fetch('/api/checkout', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ productId, size }),
+          body: JSON.stringify({ productId, size, region: _selectedRegion }),
         });
         const data = await res.json();
         if (data.url) {
