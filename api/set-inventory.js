@@ -5,10 +5,11 @@ const redis = new Redis({
   token: process.env.KV_REST_API_TOKEN,
 });
 
+const ALL_SIZES = ['S', 'M', 'L', 'XL', 'XXL', 'XXXL'];
 const VALID_PRODUCTS = {
-  hoodie:           ['M', 'L', 'XL', 'XXL'],
-  devil_tshirt:     ['S', 'M', 'L'],
-  stretcher_tshirt: ['S', 'M', 'L', 'XL', 'XXL'],
+  hoodie:           ALL_SIZES,
+  devil_tshirt:     ALL_SIZES,
+  stretcher_tshirt: ALL_SIZES,
 };
 
 module.exports = async function handler(req, res) {
