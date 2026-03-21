@@ -6,6 +6,7 @@
   <title>Heavy Sweater</title>
   <link rel="icon" type="image/svg+xml" href="img/favicon.svg" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700;900&family=Fira+Code:wght@400;700&family=Jacquard+12+Charted&display=swap" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet" />
   <script defer src="/_vercel/insights/script.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -45,7 +46,7 @@
     }
 
     .home-btn:hover { color: var(--fg); }
-    .home-btn svg { width: 24px; height: 24px; display: block; }
+    .home-btn i { font-size: 20px; display: block; }
 
     .hamburger-btn {
       display: none;
@@ -1070,9 +1071,7 @@
         border: none;
         cursor: pointer;
         color: var(--muted);
-        font-family: 'Fira Code', monospace;
-        font-size: 0.65rem;
-        letter-spacing: 0.05em;
+        font-size: 20px;
         padding: 4px 6px;
         margin-left: 10px;
         flex-shrink: 0;
@@ -1230,16 +1229,10 @@
 
   <div class="mobile-header">
     <button class="home-btn" onclick="closeMobileMenu(); showSection('home'); window.scrollTo(0,0);" title="home" style="position:static; top:auto; left:auto; flex-shrink:0;">
-      <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M3 9.5L10 3l7 6.5"/>
-        <path d="M5 8.5V17h4v-4h2v4h4V8.5"/>
-      </svg>
+      <i class="fa-regular fa-house"></i>
     </button>
     <button class="mobile-cart-btn" id="mobile-cart-btn" onclick="openCart()" aria-label="cart">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
-        <path d="M1 1h4l2.68 13.39a2 2 0 001.99 1.61h9.72a2 2 0 001.99-1.61L23 6H6"/>
-      </svg>
+      <i class="fa-regular fa-cart-shopping"></i>
       <span class="mobile-cart-badge" id="mobile-cart-badge">0</span>
     </button>
     <span class="mobile-header-spacer"></span>
@@ -1261,10 +1254,7 @@
   </div>
 
   <button class="home-btn" onclick="showSection('home')" title="home">
-    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M3 9.5L10 3l7 6.5"/>
-      <path d="M5 8.5V17h4v-4h2v4h4V8.5"/>
-    </svg>
+    <i class="fa-regular fa-house"></i>
   </button>
 
   <div class="sections-wrap">
