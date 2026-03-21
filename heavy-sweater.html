@@ -866,6 +866,29 @@
       padding: 24px 0;
     }
 
+    /* Cart toast */
+    .cart-toast {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translateX(-50%) translateY(calc(-50% + 12px));
+      background: var(--fg);
+      color: var(--bg);
+      font-family: 'Fira Code', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.06em;
+      padding: 12px 22px;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      z-index: 9999;
+    }
+    .cart-toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(-50%);
+    }
+
     .modal-platforms {
       display: flex;
       flex-direction: column;
@@ -1033,6 +1056,7 @@
       .cart-fab { display: none !important; }
 
       /* Mobile cart icon in header */
+      .mobile-header .home-btn { color: var(--muted); }
       .mobile-cart-btn {
         display: flex;
         align-items: center;
@@ -1045,6 +1069,7 @@
         font-size: 0.65rem;
         letter-spacing: 0.05em;
         padding: 4px 6px;
+        margin-left: 10px;
         flex-shrink: 0;
         position: relative;
         transition: color 0.15s;
@@ -1604,19 +1629,22 @@
     }
 
     // ── Cart logic ───────────────────────────────────────
+    let _toastTimer = null;
+    function showCartToast(name, size) {
+      const el = document.getElementById('cart-toast');
+      el.textContent = `${name} / ${size} — added to cart`;
+      el.classList.add('show');
+      clearTimeout(_toastTimer);
+      _toastTimer = setTimeout(() => el.classList.remove('show'), 2400);
+    }
+
     function addToCart(productId, size, btn) {
       const existing = _cart.find(i => i.productId === productId && i.size === size);
-      if (existing) { existing.qty++; updateCartFab(); closeSizeModal(); openCart(); return; }
+      if (existing) { existing.qty++; updateCartFab(); closeSizeModal(); showCartToast(PRODUCT_NAMES[productId], size); return; }
       _cart.push({ productId, size, name: PRODUCT_NAMES[productId], price: PRODUCT_PRICES[productId], image: PRODUCT_IMAGES[productId], qty: 1 });
       updateCartFab();
       closeSizeModal();
-      // Brief confirmation flash on the Buy Now button
-      const buyBtn = document.querySelector(`button[onclick="buyNow('${productId}')"]`);
-      if (buyBtn) {
-        const orig = buyBtn.textContent;
-        buyBtn.textContent = 'Added ✓';
-        setTimeout(() => { buyBtn.textContent = 'Buy Now'; }, 1200);
-      }
+      showCartToast(PRODUCT_NAMES[productId], size);
     }
 
     function removeFromCart(index) {
@@ -1859,6 +1887,9 @@
       </div>
     </div>
   </div>
+
+  <!-- Cart toast -->
+  <div class="cart-toast" id="cart-toast"></div>
 
   <!-- Merch lightbox -->
   <div id="merch-lightbox" onclick="closeMerchLightbox()">
