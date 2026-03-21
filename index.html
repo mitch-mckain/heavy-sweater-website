@@ -6,7 +6,6 @@
   <title>Heavy Sweater</title>
   <link rel="icon" type="image/svg+xml" href="img/favicon.svg" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700;900&family=Fira+Code:wght@400;700&family=Jacquard+12+Charted&display=swap" rel="stylesheet" />
-  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/js/all.min.js"></script>
   <script defer src="/_vercel/insights/script.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -47,6 +46,15 @@
 
     .home-btn:hover { color: var(--fg); }
     .home-btn i { font-size: 20px; display: block; }
+    .icon-svg {
+      width: 20px;
+      height: 20px;
+      display: block;
+      opacity: 0.5;
+      transition: opacity 0.15s;
+    }
+    .home-btn:hover .icon-svg,
+    .mobile-cart-btn:hover .icon-svg { opacity: 1; }
 
     .hamburger-btn {
       display: none;
@@ -1229,10 +1237,10 @@
 
   <div class="mobile-header">
     <button class="home-btn" onclick="closeMobileMenu(); showSection('home'); window.scrollTo(0,0);" title="home" style="position:static; top:auto; left:auto; flex-shrink:0;">
-      <i class="fa-regular fa-house"></i>
+      <img src="img/house-regular-full.svg" class="icon-svg" alt="home" />
     </button>
     <button class="mobile-cart-btn" id="mobile-cart-btn" onclick="openCart()" aria-label="cart">
-      <i class="fa-solid fa-cart-shopping"></i>
+      <img src="img/cart-shopping-solid-full.svg" class="icon-svg" alt="cart" />
       <span class="mobile-cart-badge" id="mobile-cart-badge">0</span>
     </button>
     <span class="mobile-header-spacer"></span>
@@ -1254,7 +1262,7 @@
   </div>
 
   <button class="home-btn" onclick="showSection('home')" title="home">
-    <i class="fa-regular fa-house"></i>
+    <img src="img/house-regular-full.svg" class="icon-svg" alt="home" />
   </button>
 
   <div class="sections-wrap">
