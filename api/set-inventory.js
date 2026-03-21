@@ -8,7 +8,7 @@ const redis = new Redis({
 const VALID_PRODUCTS = {
   hoodie:           ['M', 'L', 'XL', 'XXL'],
   devil_tshirt:     ['S', 'M', 'L'],
-  stretcher_tshirt: ['S', 'M', 'L', 'XL', 'XXL', 'XXXL'],
+  stretcher_tshirt: ['S', 'M', 'L', 'XL', 'XXL'],
 };
 
 module.exports = async function handler(req, res) {

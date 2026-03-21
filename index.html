@@ -657,11 +657,11 @@
       background: var(--card-bg);
       border: 1px solid var(--border);
       width: 100%;
-      max-width: 360px;
-      padding: 32px;
+      max-width: 480px;
+      padding: 36px 40px;
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: 24px;
       box-shadow: 0 20px 60px rgba(0,0,0,0.2);
     }
 
@@ -709,7 +709,7 @@
       font-family: 'Fira Code', monospace;
       font-size: 0.62rem;
       letter-spacing: 0.04em;
-      padding: 8px 4px;
+      padding: 11px 4px;
       background: none;
       border: 1px solid var(--border);
       color: var(--muted);
@@ -955,8 +955,16 @@
       #contact { padding: 32px 20px; justify-content: center; align-items: center; }
       .contact-email { font-size: clamp(1rem, 5vw, 2rem); text-align: center; }
 
-      /* Modal */
-      .modal { max-width: 100%; margin: 0 16px; }
+      /* Modal — bottom sheet on mobile */
+      .modal-overlay { align-items: flex-end; }
+      .modal {
+        max-width: 100%;
+        margin: 0;
+        padding: 28px 24px calc(28px + env(safe-area-inset-bottom, 0px));
+        border-radius: 20px 20px 0 0;
+        border-bottom: none;
+        gap: 20px;
+      }
     }
   </style>
 </head>
@@ -1057,7 +1065,7 @@
           <img class="merch-img" src="img/Stretcher.jpg" alt="Stretcher T-Shirt" onclick="openMerchLightbox(this)" />
           <div class="merch-card-info">
             <div class="merch-name">Stretcher T-Shirt</div>
-            <div class="merch-desc">S, M, L, XL, XXL, XXXL</div>
+            <div class="merch-desc">S, M, L, XL, XXL</div>
             <button class="btn filled" onclick="buyNow('stretcher_tshirt')">Buy Now</button>
           </div>
         </div>
@@ -1343,7 +1351,7 @@
     const PRODUCT_SIZES = {
       hoodie:           ['M', 'L', 'XL', 'XXL'],
       devil_tshirt:     ['S', 'M', 'L'],
-      stretcher_tshirt: ['S', 'M', 'L', 'XL', 'XXL', 'XXXL'],
+      stretcher_tshirt: ['S', 'M', 'L', 'XL', 'XXL'],
     };
     const PRODUCT_NAMES = {
       hoodie:           'Heavy Sweater Hoodie',

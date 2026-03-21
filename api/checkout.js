@@ -23,7 +23,7 @@ const PRODUCTS = {
     name: 'Stretcher T-Shirt',
     price: 2800,
     image: 'https://heavy-sweater.com/img/Stretcher.jpg',
-    sizes: ['S', 'M', 'L', 'XL', 'XXL', 'XXXL'],
+    sizes: ['S', 'M', 'L', 'XL', 'XXL'],
   },
 };
 
