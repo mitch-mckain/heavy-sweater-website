@@ -1115,6 +1115,9 @@
         font-size: 2rem;
         text-underline-offset: 6px;
       }
+      .mobile-menu .mobile-menu-home {
+        color: var(--fg);
+      }
 
       .mobile-menu-close {
         position: absolute;
@@ -1244,6 +1247,7 @@
 
   <div class="mobile-menu" id="mobile-menu">
     <button class="mobile-menu-close" onclick="closeMobileMenu()">✕</button>
+    <button class="home-nav-link mobile-menu-home" onclick="mobileNav('home')">home</button>
     <button class="home-nav-link shows"   onclick="mobileNav('shows')">shows</button>
     <button class="home-nav-link merch"   onclick="mobileNav('merch')">merch</button>
     <button class="home-nav-link listen"  onclick="mobileNav('listen')">listen</button>
@@ -1502,7 +1506,7 @@
   </div>
 
   <script>
-    function showSection(id) {
+    function showSection(id, pushState = true) {
       document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
       document.getElementById(id).classList.add('active');
 
@@ -1517,7 +1521,28 @@
       // Update mobile header title
       const titleEl = document.getElementById('mobile-page-title');
       if (titleEl) titleEl.textContent = id === 'home' ? 'heavy sweater' : id;
+
+      // Push history so the back button steps through sections
+      if (pushState) {
+        const url = id === 'home' ? '/' : `/#${id}`;
+        history.pushState({ section: id }, '', url);
+      }
     }
+
+    // Handle browser back/forward
+    window.addEventListener('popstate', e => {
+      const id = (e.state && e.state.section) ? e.state.section : 'home';
+      showSection(id, false);
+    });
+
+    // On first load, respect any hash in the URL (e.g. /#merch)
+    (function() {
+      const hash = window.location.hash.replace('#', '');
+      const valid = ['home', 'merch', 'shows', 'listen', 'about', 'contact'];
+      const initial = valid.includes(hash) ? hash : 'home';
+      history.replaceState({ section: initial }, '', window.location.href);
+      if (initial !== 'home') showSection(initial, false);
+    })();
 
     function openModal(name, bandcamp, spotify, apple) {
       document.getElementById('modal-album-name').textContent = name;
