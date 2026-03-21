@@ -1283,8 +1283,8 @@
           <img class="merch-img" src="img/Sweater-mock.jpg" alt="Heavy Sweater Hoodie" onclick="openMerchLightbox(this)" />
           <div class="merch-card-info">
             <div class="merch-name">Heavy Sweater Hoodie</div>
-            <div class="merch-desc">M, L, XL, XXL</div>
-            <button class="btn filled" onclick="buyNow('hoodie')">Buy Now</button>
+            <div class="merch-desc" id="merch-desc-hoodie">M, L, XL, XXL</div>
+            <button class="btn filled" id="merch-btn-hoodie" onclick="buyNow('hoodie')">Buy Now</button>
           </div>
         </div>
         <div class="merch-card">
@@ -1292,8 +1292,8 @@
           <img class="merch-img" src="img/Devil_Tshirt.jpg" alt="Green Devil T-Shirt" onclick="openMerchLightbox(this)" />
           <div class="merch-card-info">
             <div class="merch-name">Green Devil T-Shirt</div>
-            <div class="merch-desc">S, M, L</div>
-            <button class="btn filled" onclick="buyNow('devil_tshirt')">Buy Now</button>
+            <div class="merch-desc" id="merch-desc-devil_tshirt">S, M, L</div>
+            <button class="btn filled" id="merch-btn-devil_tshirt" onclick="buyNow('devil_tshirt')">Buy Now</button>
           </div>
         </div>
         <div class="merch-card">
@@ -1301,8 +1301,8 @@
           <img class="merch-img" src="img/Stretcher.jpg" alt="Stretcher T-Shirt" onclick="openMerchLightbox(this)" />
           <div class="merch-card-info">
             <div class="merch-name">Stretcher T-Shirt</div>
-            <div class="merch-desc">S, M, L, XL, XXL</div>
-            <button class="btn filled" onclick="buyNow('stretcher_tshirt')">Buy Now</button>
+            <div class="merch-desc" id="merch-desc-stretcher_tshirt">S, M, L, XL, XXL</div>
+            <button class="btn filled" id="merch-btn-stretcher_tshirt" onclick="buyNow('stretcher_tshirt')">Buy Now</button>
           </div>
         </div>
       </div>
@@ -1576,11 +1576,53 @@
     }
 
     // ── CART & CHECKOUT ──────────────────────────────────
+    const ALL_SIZES = ['S', 'M', 'L', 'XL', 'XXL', 'XXXL'];
     const PRODUCT_SIZES = {
-      hoodie:           ['M', 'L', 'XL', 'XXL'],
-      devil_tshirt:     ['S', 'M', 'L'],
-      stretcher_tshirt: ['S', 'M', 'L', 'XL', 'XXL'],
+      hoodie:           ALL_SIZES,
+      devil_tshirt:     ALL_SIZES,
+      stretcher_tshirt: ALL_SIZES,
     };
+
+    // Live inventory — fetched from /api/inventory on load
+    let _inventory = {};
+
+    async function loadInventory() {
+      try {
+        const res = await fetch('/api/inventory');
+        if (res.ok) {
+          _inventory = await res.json();
+          updateMerchCards();
+        }
+      } catch (e) { /* fail silently — merch cards keep static fallback text */ }
+    }
+
+    function stockFor(productId, size) {
+      return (_inventory[productId] && _inventory[productId][size] != null)
+        ? _inventory[productId][size] : null; // null = unknown (not yet loaded)
+    }
+
+    function updateMerchCards() {
+      const products = ['hoodie', 'devil_tshirt', 'stretcher_tshirt'];
+      products.forEach(productId => {
+        const descEl = document.getElementById(`merch-desc-${productId}`);
+        const btnEl  = document.getElementById(`merch-btn-${productId}`);
+        if (!descEl || !btnEl) return;
+
+        const inStock = ALL_SIZES.filter(s => stockFor(productId, s) > 0);
+        if (inStock.length === 0) {
+          descEl.textContent = 'sold out';
+          btnEl.disabled = true;
+          btnEl.style.opacity = '0.4';
+        } else {
+          descEl.textContent = inStock.join(', ');
+          btnEl.disabled = false;
+          btnEl.style.opacity = '';
+        }
+      });
+    }
+
+    // Kick off inventory fetch immediately
+    loadInventory();
     const PRODUCT_NAMES = {
       hoodie:           'Heavy Sweater Hoodie',
       devil_tshirt:     'Green Devil T-Shirt',
@@ -1606,15 +1648,27 @@
       document.getElementById('size-modal-name').textContent = PRODUCT_NAMES[productId];
       const container = document.getElementById('size-options');
       container.innerHTML = '';
-      PRODUCT_SIZES[productId].forEach(size => {
+      ALL_SIZES.forEach(size => {
         const btn = document.createElement('button');
-        btn.className = 'btn';
-        btn.textContent = size;
         btn.style.minWidth = '64px';
-        // Dim sizes already in cart
+        const stock = stockFor(productId, size);
         const inCart = _cart.some(i => i.productId === productId && i.size === size);
-        if (inCart) { btn.style.opacity = '0.35'; btn.title = 'Already in cart'; }
-        btn.onclick = () => addToCart(productId, size, btn);
+        const oos = stock !== null && stock === 0;
+
+        if (oos) {
+          btn.className = 'btn';
+          btn.style.opacity = '0.3';
+          btn.style.textDecoration = 'line-through';
+          btn.style.cursor = 'not-allowed';
+          btn.title = 'Sold out';
+          btn.innerHTML = `${size}`;
+          btn.disabled = true;
+        } else {
+          btn.className = 'btn';
+          btn.textContent = size;
+          if (inCart) { btn.style.opacity = '0.35'; btn.title = 'Already in cart'; }
+          btn.onclick = () => addToCart(productId, size, btn);
+        }
         container.appendChild(btn);
       });
       document.getElementById('size-modal').classList.add('open');
