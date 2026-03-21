@@ -81,15 +81,10 @@ module.exports = async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { productId, size, region } = req.body;
-  const product = PRODUCTS[productId];
+  const { items, region } = req.body;
 
-  if (!product || !size) {
-    return res.status(400).json({ error: 'Invalid product or missing size' });
-  }
-
-  if (!product.sizes.includes(size)) {
-    return res.status(400).json({ error: 'Invalid size' });
+  if (!Array.isArray(items) || items.length === 0) {
+    return res.status(400).json({ error: 'Cart is empty' });
   }
 
   const shipping = SHIPPING[region];
@@ -97,39 +92,50 @@ module.exports = async function handler(req, res) {
     return res.status(400).json({ error: 'Invalid region' });
   }
 
-  // Check inventory
-  const inventoryKey = `inv:${productId}:${size}`;
-  const stock = await redis.get(inventoryKey);
-  const stockCount = parseInt(stock ?? '0', 10);
+  // Validate all items and check inventory before creating the session
+  for (const { productId, size } of items) {
+    const product = PRODUCTS[productId];
+    if (!product) return res.status(400).json({ error: `Unknown product: ${productId}` });
+    if (!product.sizes.includes(size)) return res.status(400).json({ error: `Invalid size ${size} for ${productId}` });
 
-  if (stockCount <= 0) {
-    return res.status(200).json({ soldOut: true });
+    const stock = await redis.get(`inv:${productId}:${size}`);
+    if (parseInt(stock ?? '0', 10) <= 0) {
+      return res.status(200).json({
+        soldOut: true,
+        soldOutName: product.name,
+        soldOutSize: size,
+      });
+    }
   }
+
+  // Build Stripe line items
+  const line_items = items.map(({ productId, size }) => {
+    const product = PRODUCTS[productId];
+    return {
+      price_data: {
+        currency: 'cad',
+        product_data: {
+          name: `${product.name} — Size ${size}`,
+          images: [product.image],
+        },
+        unit_amount: product.price,
+      },
+      quantity: 1,
+    };
+  });
 
   try {
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
-      line_items: [
-        {
-          price_data: {
-            currency: 'cad',
-            product_data: {
-              name: `${product.name} — Size ${size}`,
-              images: [product.image],
-            },
-            unit_amount: product.price,
-          },
-          quantity: 1,
-        },
-      ],
+      line_items,
       mode: 'payment',
       shipping_address_collection: {
         allowed_countries: shipping.allowed_countries,
       },
       shipping_options: [shipping.option],
       metadata: {
-        productId,
-        size,
+        // Store items as JSON for the webhook to decrement inventory
+        items: JSON.stringify(items),
         region,
       },
       success_url: `${req.headers.origin}/?order=success`,

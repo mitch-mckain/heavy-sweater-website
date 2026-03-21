@@ -40,16 +40,18 @@ module.exports = async function handler(req, res) {
 
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object;
-    const { productId, size } = session.metadata || {};
+    const { items: itemsJson } = session.metadata || {};
 
-    if (productId && size) {
-      const inventoryKey = `inv:${productId}:${size}`;
-      const newStock = await redis.decr(inventoryKey);
-      console.log(`Inventory decremented: ${inventoryKey} → ${newStock}`);
+    if (itemsJson) {
+      let items;
+      try { items = JSON.parse(itemsJson); } catch (e) { items = []; }
 
-      // Don't let it go below 0
-      if (newStock < 0) {
-        await redis.set(inventoryKey, 0);
+      for (const { productId, size } of items) {
+        if (!productId || !size) continue;
+        const inventoryKey = `inv:${productId}:${size}`;
+        const newStock = await redis.decr(inventoryKey);
+        console.log(`Inventory decremented: ${inventoryKey} → ${newStock}`);
+        if (newStock < 0) await redis.set(inventoryKey, 0);
       }
     }
   }

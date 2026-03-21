@@ -720,6 +720,116 @@
     .region-btn:hover { border-color: var(--fg); color: var(--fg); }
     .region-btn.active { background: var(--fg); color: var(--bg); border-color: var(--fg); }
 
+    /* ── CART ───────────────────────────────────────────── */
+    .cart-fab {
+      position: fixed;
+      top: 40px;
+      right: 20px;
+      z-index: 100;
+      background: var(--fg);
+      color: var(--bg);
+      border: none;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.68rem;
+      letter-spacing: 0.06em;
+      padding: 7px 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+    .cart-fab.has-items { opacity: 1; pointer-events: auto; }
+    .cart-fab-count {
+      background: var(--bg);
+      color: var(--fg);
+      font-size: 0.6rem;
+      font-weight: 700;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .cart-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 300;
+      background: rgba(0,0,0,0.5);
+      align-items: center;
+      justify-content: center;
+    }
+    .cart-overlay.open { display: flex; }
+
+    .cart-modal {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      width: 100%;
+      max-width: 480px;
+      padding: 36px 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    }
+
+    .cart-items-list { display: flex; flex-direction: column; }
+
+    .cart-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .cart-item:first-child { border-top: 1px solid var(--border); }
+
+    .cart-item-name {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+    .cart-item-meta {
+      font-size: 0.62rem;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+      margin-top: 2px;
+    }
+    .cart-item-price { font-size: 0.85rem; font-weight: 700; }
+    .cart-remove-btn {
+      background: none;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 0.9rem;
+      padding: 4px 6px;
+      transition: color 0.15s;
+      line-height: 1;
+    }
+    .cart-remove-btn:hover { color: var(--fg); }
+
+    .cart-subtotal {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+    }
+    .cart-empty-msg {
+      font-size: 0.8rem;
+      color: var(--muted);
+      text-align: center;
+      padding: 24px 0;
+    }
+
     .modal-platforms {
       display: flex;
       flex-direction: column;
@@ -1196,19 +1306,11 @@
       <div class="modal-header">
         <div class="modal-title-block">
           <div class="modal-album-name" id="size-modal-name"></div>
-          <div class="modal-prompt">Select a size</div>
+          <div class="modal-prompt">Select a size to add to cart</div>
         </div>
         <button class="modal-close" onclick="closeSizeModal()">✕</button>
       </div>
       <div id="size-options" style="display:flex;flex-wrap:wrap;gap:10px;margin-top:4px;"></div>
-      <div>
-        <div class="modal-prompt" style="margin-bottom:8px;">Ship to</div>
-        <div class="region-picker">
-          <button class="region-btn active" id="region-canada" onclick="selectRegion('canada')">🇨🇦 Canada</button>
-          <button class="region-btn" id="region-usa" onclick="selectRegion('usa')">🇺🇸 USA</button>
-          <button class="region-btn" id="region-international" onclick="selectRegion('international')">🌍 International</button>
-        </div>
-      </div>
     </div>
   </div>
 
@@ -1347,7 +1449,7 @@
       setTimeout(() => { hint.textContent = 'click to copy'; }, 2000);
     }
 
-    // ── STRIPE CHECKOUT ──────────────────────────────────
+    // ── CART & CHECKOUT ──────────────────────────────────
     const PRODUCT_SIZES = {
       hoodie:           ['M', 'L', 'XL', 'XXL'],
       devil_tshirt:     ['S', 'M', 'L'],
@@ -1358,22 +1460,18 @@
       devil_tshirt:     'Green Devil T-Shirt',
       stretcher_tshirt: 'Stretcher T-Shirt',
     };
+    const PRODUCT_PRICES = {
+      hoodie: 5500,
+      devil_tshirt: 2800,
+      stretcher_tshirt: 2800,
+    };
 
-    let _pendingProductId = null;
+    // Cart state
+    let _cart = [];
+    let _cartRegion = 'canada';
 
-    let _selectedRegion = 'canada';
-
-    function selectRegion(region) {
-      _selectedRegion = region;
-      ['canada', 'usa', 'international'].forEach(r => {
-        document.getElementById('region-' + r).classList.toggle('active', r === region);
-      });
-    }
-
+    // ── Size picker modal ────────────────────────────────
     function buyNow(productId) {
-      _pendingProductId = productId;
-      // Reset region picker to Canada each time modal opens
-      selectRegion('canada');
       document.getElementById('size-modal-name').textContent = PRODUCT_NAMES[productId];
       const container = document.getElementById('size-options');
       container.innerHTML = '';
@@ -1382,7 +1480,10 @@
         btn.className = 'btn';
         btn.textContent = size;
         btn.style.minWidth = '64px';
-        btn.onclick = () => proceedToCheckout(productId, size, btn);
+        // Dim sizes already in cart
+        const inCart = _cart.some(i => i.productId === productId && i.size === size);
+        if (inCart) { btn.style.opacity = '0.35'; btn.title = 'Already in cart'; }
+        btn.onclick = () => addToCart(productId, size, btn);
         container.appendChild(btn);
       });
       document.getElementById('size-modal').classList.add('open');
@@ -1390,34 +1491,136 @@
 
     function closeSizeModal() {
       document.getElementById('size-modal').classList.remove('open');
-      _pendingProductId = null;
     }
 
     function closeSizeModalOnOverlay(e) {
       if (e.target === document.getElementById('size-modal')) closeSizeModal();
     }
 
-    async function proceedToCheckout(productId, size, btn) {
+    // ── Cart logic ───────────────────────────────────────
+    function addToCart(productId, size, btn) {
+      const exists = _cart.some(i => i.productId === productId && i.size === size);
+      if (exists) { closeSizeModal(); openCart(); return; }
+      _cart.push({ productId, size, name: PRODUCT_NAMES[productId], price: PRODUCT_PRICES[productId] });
+      updateCartFab();
+      closeSizeModal();
+      // Brief confirmation flash on the Buy Now button
+      const buyBtn = document.querySelector(`button[onclick="buyNow('${productId}')"]`);
+      if (buyBtn) {
+        const orig = buyBtn.textContent;
+        buyBtn.textContent = 'Added ✓';
+        setTimeout(() => { buyBtn.textContent = orig; }, 1200);
+      }
+    }
+
+    function removeFromCart(index) {
+      _cart.splice(index, 1);
+      updateCartFab();
+      renderCartModal();
+    }
+
+    function updateCartFab() {
+      const fab = document.getElementById('cart-fab');
+      const count = document.getElementById('cart-fab-count');
+      count.textContent = _cart.length;
+      fab.classList.toggle('has-items', _cart.length > 0);
+    }
+
+    // ── Cart modal ───────────────────────────────────────
+    function openCart() {
+      renderCartModal();
+      document.getElementById('cart-overlay').classList.add('open');
+    }
+
+    function closeCart() {
+      document.getElementById('cart-overlay').classList.remove('open');
+    }
+
+    function closeCartOnOverlay(e) {
+      if (e.target === document.getElementById('cart-overlay')) closeCart();
+    }
+
+    function selectCartRegion(region) {
+      _cartRegion = region;
+      ['canada', 'usa', 'international'].forEach(r => {
+        document.getElementById('cart-region-' + r).classList.toggle('active', r === region);
+      });
+    }
+
+    function renderCartModal() {
+      const listEl   = document.getElementById('cart-items-list');
+      const footerEl = document.getElementById('cart-footer');
+      const emptyEl  = document.getElementById('cart-empty-msg');
+      const labelEl  = document.getElementById('cart-count-label');
+
+      labelEl.textContent = _cart.length === 1 ? '1 item' : `${_cart.length} items`;
+
+      if (_cart.length === 0) {
+        listEl.innerHTML = '';
+        footerEl.style.display = 'none';
+        emptyEl.style.display = 'block';
+        return;
+      }
+
+      emptyEl.style.display = 'none';
+      footerEl.style.display = 'flex';
+
+      listEl.innerHTML = '';
+      let subtotal = 0;
+      _cart.forEach((item, i) => {
+        subtotal += item.price;
+        const row = document.createElement('div');
+        row.className = 'cart-item';
+        row.innerHTML = `
+          <div>
+            <div class="cart-item-name">${item.name}</div>
+            <div class="cart-item-meta">Size: ${item.size}</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div class="cart-item-price">$${(item.price / 100).toFixed(2)}</div>
+            <button class="cart-remove-btn" onclick="removeFromCart(${i})">✕</button>
+          </div>`;
+        listEl.appendChild(row);
+      });
+
+      document.getElementById('cart-subtotal-val').textContent =
+        `$${(subtotal / 100).toFixed(2)} CAD`;
+
+      // Re-apply current region selection
+      selectCartRegion(_cartRegion);
+
+      // Reset checkout button
+      const btn = document.getElementById('cart-checkout-btn');
+      btn.textContent = 'Checkout';
+      btn.disabled = false;
+      btn.style.opacity = '';
+    }
+
+    async function checkoutCart() {
+      if (_cart.length === 0) return;
+      const btn = document.getElementById('cart-checkout-btn');
       btn.textContent = '...';
       btn.disabled = true;
       try {
         const res = await fetch('/api/checkout', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ productId, size, region: _selectedRegion }),
+          body: JSON.stringify({
+            items: _cart.map(i => ({ productId: i.productId, size: i.size })),
+            region: _cartRegion,
+          }),
         });
         const data = await res.json();
         if (data.url) {
           window.location.href = data.url;
         } else if (data.soldOut) {
-          btn.textContent = 'Sold Out';
-          btn.disabled = true;
-          btn.style.opacity = '0.4';
+          btn.textContent = `${data.soldOutName} (${data.soldOutSize}) is sold out`;
+          btn.style.opacity = '0.5';
         } else {
           throw new Error(data.error || 'Something went wrong');
         }
       } catch (e) {
-        btn.textContent = size;
+        btn.textContent = 'Checkout';
         btn.disabled = false;
         alert('Could not start checkout. Please try again.');
       }
@@ -1427,6 +1630,8 @@
     (function() {
       const params = new URLSearchParams(window.location.search);
       if (params.get('order') === 'success') {
+        _cart = [];
+        updateCartFab();
         showSection('merch');
         const msg = document.createElement('div');
         msg.style.cssText = 'position:fixed;top:50px;left:50%;transform:translateX(-50%);background:#1a1917;color:#faf9f7;font-family:"Fira Code",monospace;font-size:0.8rem;letter-spacing:0.1em;padding:12px 24px;z-index:9999;';
@@ -1490,6 +1695,41 @@
       grain();
     })();
   </script>
+
+  <!-- Cart FAB -->
+  <button class="cart-fab" id="cart-fab" onclick="openCart()">
+    Cart <span class="cart-fab-count" id="cart-fab-count">0</span>
+  </button>
+
+  <!-- Cart modal -->
+  <div class="cart-overlay" id="cart-overlay" onclick="closeCartOnOverlay(event)">
+    <div class="cart-modal">
+      <div class="modal-header">
+        <div class="modal-title-block">
+          <div class="modal-album-name">Your Cart</div>
+          <div class="modal-prompt" id="cart-count-label">0 items</div>
+        </div>
+        <button class="modal-close" onclick="closeCart()">✕</button>
+      </div>
+      <div class="cart-empty-msg" id="cart-empty-msg">Your cart is empty.</div>
+      <div class="cart-items-list" id="cart-items-list"></div>
+      <div id="cart-footer" style="display:none; flex-direction:column; gap:20px;">
+        <div class="cart-subtotal">
+          <span>SUBTOTAL</span>
+          <span id="cart-subtotal-val"></span>
+        </div>
+        <div>
+          <div class="modal-prompt" style="margin-bottom:8px;">Ship to</div>
+          <div class="region-picker">
+            <button class="region-btn active" id="cart-region-canada" onclick="selectCartRegion('canada')">🇨🇦 Canada</button>
+            <button class="region-btn" id="cart-region-usa" onclick="selectCartRegion('usa')">🇺🇸 USA</button>
+            <button class="region-btn" id="cart-region-international" onclick="selectCartRegion('international')">🌍 International</button>
+          </div>
+        </div>
+        <button class="btn filled" id="cart-checkout-btn" onclick="checkoutCart()">Checkout</button>
+      </div>
+    </div>
+  </div>
 
   <!-- Merch lightbox -->
   <div id="merch-lightbox" onclick="closeMerchLightbox()">
