@@ -50,12 +50,8 @@
       width: 22px;
       height: 22px;
       display: block;
-      filter: brightness(0) opacity(0.5);
-      transition: filter 0.15s;
     }
-    .home-btn:hover .icon-svg,
-    .mobile-cart-btn:hover .icon-svg { filter: brightness(0) opacity(0.9); }
-    .cart-fab-icon { width: 16px; height: 16px; filter: brightness(0) opacity(0.85); }
+    .cart-fab-icon { width: 16px; height: 16px; }
 
     .hamburger-btn {
       display: none;
@@ -1240,10 +1236,10 @@
 
   <div class="mobile-header">
     <button class="home-btn" onclick="closeMobileMenu(); showSection('home'); window.scrollTo(0,0);" title="home" style="position:static; top:auto; left:auto; flex-shrink:0;">
-      <img src="img/home.svg" class="icon-svg" alt="home" />
+      <svg class="icon-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" fill="currentColor"><path d="M240-200h120v-240h240v240h120v-360L480-740 240-560v360Zm-80 80v-480l320-240 320 240v480H520v-240h-80v240H160Zm320-350Z"/></svg>
     </button>
     <button class="mobile-cart-btn" id="mobile-cart-btn" onclick="openCart()" aria-label="cart">
-      <img src="img/shopping-cart.svg" class="icon-svg" alt="cart" />
+      <svg class="icon-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" fill="currentColor"><path d="M223.5-103.5Q200-127 200-160t23.5-56.5Q247-240 280-240t56.5 23.5Q360-193 360-160t-23.5 56.5Q313-80 280-80t-56.5-23.5Zm400 0Q600-127 600-160t23.5-56.5Q647-240 680-240t56.5 23.5Q760-193 760-160t-23.5 56.5Q713-80 680-80t-56.5-23.5ZM246-720l96 200h280l110-200H246Zm-38-80h590q23 0 35 20.5t1 41.5L692-482q-11 20-29.5 31T622-440H324l-44 80h480v80H280q-45 0-68-39.5t-2-78.5l54-98-144-304H40v-80h130l38 80Zm134 280h280-280Z"/></svg>
       <span class="mobile-cart-badge" id="mobile-cart-badge">0</span>
     </button>
     <span class="mobile-header-spacer"></span>
@@ -1265,7 +1261,7 @@
   </div>
 
   <button class="home-btn" onclick="showSection('home')" title="home">
-    <img src="img/home.svg" class="icon-svg" alt="home" />
+    <svg class="icon-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" fill="currentColor"><path d="M240-200h120v-240h240v240h120v-360L480-740 240-560v360Zm-80 80v-480l320-240 320 240v480H520v-240h-80v240H160Zm320-350Z"/></svg>
   </button>
 
   <div class="sections-wrap">
@@ -1939,7 +1935,7 @@
 
   <!-- Cart FAB -->
   <button class="cart-fab" id="cart-fab" onclick="openCart()">
-    <img src="img/shopping-cart.svg" class="icon-svg cart-fab-icon" alt="" />
+    <svg class="icon-svg cart-fab-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" fill="currentColor"><path d="M223.5-103.5Q200-127 200-160t23.5-56.5Q247-240 280-240t56.5 23.5Q360-193 360-160t-23.5 56.5Q313-80 280-80t-56.5-23.5Zm400 0Q600-127 600-160t23.5-56.5Q647-240 680-240t56.5 23.5Q760-193 760-160t-23.5 56.5Q713-80 680-80t-56.5-23.5ZM246-720l96 200h280l110-200H246Zm-38-80h590q23 0 35 20.5t1 41.5L692-482q-11 20-29.5 31T622-440H324l-44 80h480v80H280q-45 0-68-39.5t-2-78.5l54-98-144-304H40v-80h130l38 80Zm134 280h280-280Z"/></svg>
     Cart <span class="cart-fab-count" id="cart-fab-count">0</span>
   </button>
 
