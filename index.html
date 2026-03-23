@@ -2074,7 +2074,7 @@
     // Handle post-checkout redirect
     (function() {
       const params = new URLSearchParams(window.location.search);
-      const orderSuccess = sessionStorage.getItem('orderSuccess') === '1';
+      const orderSuccess = sessionStorage.getItem('orderSuccess') === '1' || params.get('order') === 'success';
       const orderCanceled = params.get('order') === 'canceled';
 
       if (orderSuccess) {
