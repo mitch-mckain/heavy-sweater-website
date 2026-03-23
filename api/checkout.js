@@ -15,7 +15,7 @@ const PRODUCTS = {
   },
   devil_tshirt: {
     name: 'Green Devil T-Shirt',
-    price: 100,
+    price: 2800,
     image: 'https://heavy-sweater.com/img/Devil_Tshirt.jpg',
     sizes: ['S', 'M', 'L', 'XL', 'XXL', 'XXXL'],
   },
@@ -32,7 +32,7 @@ const SHIPPING = {
     option: {
       shipping_rate_data: {
         type: 'fixed_amount',
-        fixed_amount: { amount: 100, currency: 'cad' },
+        fixed_amount: { amount: 1200, currency: 'cad' },
         display_name: 'Canada Standard Shipping',
         delivery_estimate: {
           minimum: { unit: 'business_day', value: 5 },

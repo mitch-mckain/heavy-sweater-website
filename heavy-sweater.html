@@ -1300,6 +1300,12 @@
         padding: 8px;
       }
 
+      /* Order success overlay — mobile */
+      .order-success-inner { padding: 28px 20px; }
+      .order-success-title { font-size: 1.5rem; }
+      .order-success-items { min-width: 0; width: 100%; }
+      .order-success-btn { width: 100%; text-align: center; }
+
       /* Merch */
       #merch .section-title { display: none; }
       #merch { padding: 32px 20px; gap: 16px; justify-content: center; align-items: center; }
@@ -1465,7 +1471,7 @@
           </div>
         </div>
         <div class="merch-card">
-          <span class="merch-price-tag">$1</span>
+          <span class="merch-price-tag">$28</span>
           <img class="merch-img" src="img/Devil_Tshirt.jpg" alt="Green Devil T-Shirt" onclick="openMerchLightbox(this)" />
           <div class="merch-card-info">
             <div class="merch-name">Green Devil T-Shirt</div>
@@ -1861,7 +1867,7 @@
     };
     const PRODUCT_PRICES = {
       hoodie: 5500,
-      devil_tshirt: 100,
+      devil_tshirt: 2800,
       stretcher_tshirt: 2800,
     };
     const PRODUCT_IMAGES = {
@@ -1974,7 +1980,7 @@
       if (e.target === document.getElementById('cart-overlay')) closeCart();
     }
 
-    const SHIPPING_COSTS = { canada: '$1 CAD', usa: '$18 CAD', international: '$28 CAD' };
+    const SHIPPING_COSTS = { canada: '$12 CAD', usa: '$18 CAD', international: '$28 CAD' };
 
     function selectCartRegion(region) {
       _cartRegion = region;
