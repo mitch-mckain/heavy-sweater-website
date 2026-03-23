@@ -138,8 +138,8 @@ module.exports = async function handler(req, res) {
         items: JSON.stringify(items),
         region,
       },
-      success_url: `${req.headers.origin}/?order=success`,
-      cancel_url: `${req.headers.origin}/?order=canceled`,
+      success_url: 'https://www.heavy-sweater.com/?order=success',
+      cancel_url: 'https://www.heavy-sweater.com/?order=canceled',
     });
 
     res.status(200).json({ url: session.url });
