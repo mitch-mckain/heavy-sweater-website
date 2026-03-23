@@ -1046,6 +1046,76 @@
       animation: sparkle-fade 0.55s ease-out forwards;
     }
 
+    /* ── ORDER SUCCESS ───────────────────────────────── */
+    .order-success-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: var(--bg);
+      z-index: 500;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .order-success-overlay.visible { display: flex; }
+    .order-success-inner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      text-align: center;
+      padding: 40px;
+    }
+    .order-success-star {
+      font-size: 3rem;
+      animation: success-pulse 1.2s ease-in-out infinite alternate;
+    }
+    @keyframes success-pulse {
+      from { transform: scale(1);   opacity: 1; }
+      to   { transform: scale(1.3); opacity: 0.6; }
+    }
+    .order-success-title {
+      font-family: 'Fira Code', monospace;
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      color: var(--fg);
+    }
+    .order-success-sub {
+      font-family: 'Fira Code', monospace;
+      font-size: 0.9rem;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+      line-height: 1.7;
+    }
+    .order-success-items {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      text-align: center;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.8rem;
+      color: var(--fg);
+      letter-spacing: 0.06em;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 0;
+      min-width: 240px;
+    }
+    .order-success-btn {
+      margin-top: 12px;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.85rem;
+      letter-spacing: 0.1em;
+      background: var(--fg);
+      color: var(--bg);
+      border: none;
+      padding: 12px 28px;
+      cursor: var(--cursor);
+      transition: opacity 0.2s;
+    }
+    .order-success-btn:hover { opacity: 0.75; }
+
     /* Mobile-only elements — always hidden on desktop */
     .mobile-menu { display: none; }
 
@@ -1395,7 +1465,7 @@
           </div>
         </div>
         <div class="merch-card">
-          <span class="merch-price-tag">$1</span>
+          <span class="merch-price-tag">$28</span>
           <img class="merch-img" src="img/Devil_Tshirt.jpg" alt="Green Devil T-Shirt" onclick="openMerchLightbox(this)" />
           <div class="merch-card-info">
             <div class="merch-name">Green Devil T-Shirt</div>
@@ -1548,6 +1618,17 @@
       </a>
     </div>
   </nav>
+
+  <!-- ORDER SUCCESS OVERLAY -->
+  <div class="order-success-overlay" id="order-success-overlay">
+    <div class="order-success-inner">
+      <div class="order-success-star">✦</div>
+      <div class="order-success-title">Order placed!</div>
+      <div class="order-success-items" id="order-success-items"></div>
+      <div class="order-success-sub">A confirmation is on its way to your email.<br>Thanks for supporting Heavy Sweater.</div>
+      <button class="order-success-btn" onclick="closeOrderSuccess()">Back to merch</button>
+    </div>
+  </div>
 
   <!-- SIZE PICKER MODAL -->
   <div class="modal-overlay" id="size-modal" onclick="closeSizeModalOnOverlay(event)">
@@ -1706,6 +1787,10 @@
       document.getElementById('mobile-menu').classList.remove('open');
     }
 
+    function closeOrderSuccess() {
+      document.getElementById('order-success-overlay').classList.remove('visible');
+    }
+
     function mobileNav(id) {
       closeMobileMenu();
       showSection(id);
@@ -1774,7 +1859,7 @@
     };
     const PRODUCT_PRICES = {
       hoodie: 5500,
-      devil_tshirt: 100,
+      devil_tshirt: 2800,
       stretcher_tshirt: 2800,
     };
     const PRODUCT_IMAGES = {
@@ -1886,11 +1971,15 @@
       if (e.target === document.getElementById('cart-overlay')) closeCart();
     }
 
+    const SHIPPING_COSTS = { canada: '$12 CAD', usa: '$18 CAD', international: '$28 CAD' };
+
     function selectCartRegion(region) {
       _cartRegion = region;
       ['canada', 'usa', 'international'].forEach(r => {
         document.getElementById('cart-region-' + r).classList.toggle('active', r === region);
       });
+      const shippingEl = document.getElementById('cart-shipping-val');
+      if (shippingEl) shippingEl.textContent = SHIPPING_COSTS[region];
     }
 
     function renderCartModal() {
@@ -1966,6 +2055,7 @@
         });
         const data = await res.json();
         if (data.url) {
+          sessionStorage.setItem('lastOrder', JSON.stringify(_cart));
           window.location.href = data.url;
         } else if (data.soldOut) {
           btn.textContent = `${data.soldOutName} (${data.soldOutSize}) is sold out`;
@@ -1984,18 +2074,31 @@
     (function() {
       const params = new URLSearchParams(window.location.search);
       if (params.get('order') === 'success') {
+        // Populate order summary from saved cart
+        const lastOrder = JSON.parse(sessionStorage.getItem('lastOrder') || '[]');
+        sessionStorage.removeItem('lastOrder');
+        const itemsEl = document.getElementById('order-success-items');
+        if (lastOrder.length > 0) {
+          itemsEl.innerHTML = lastOrder.map(i =>
+            `<div>${i.name} — Size ${i.size}${i.qty > 1 ? ` ×${i.qty}` : ''}</div>`
+          ).join('');
+          itemsEl.style.display = 'flex';
+        } else {
+          itemsEl.style.display = 'none';
+        }
         _cart = [];
         updateCartFab();
         showSection('merch');
-        const msg = document.createElement('div');
-        msg.style.cssText = 'position:fixed;top:50px;left:50%;transform:translateX(-50%);background:#1a1917;color:#faf9f7;font-family:"Fira Code",monospace;font-size:0.8rem;letter-spacing:0.1em;padding:12px 24px;z-index:9999;';
-        msg.textContent = 'Order placed! Check your email for confirmation.';
-        document.body.appendChild(msg);
-        setTimeout(() => msg.remove(), 6000);
+        document.getElementById('order-success-overlay').classList.add('visible');
         history.replaceState({}, '', '/');
       } else if (params.get('order') === 'canceled') {
         showSection('merch');
         history.replaceState({}, '', '/');
+        // Show cancellation toast
+        const toast = document.getElementById('cart-toast');
+        toast.textContent = 'No worries — your order wasn\'t placed.';
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 4000);
       }
     })();
 
@@ -2073,7 +2176,10 @@
           <span>SUBTOTAL</span>
           <span id="cart-subtotal-val"></span>
         </div>
-        <div class="modal-prompt" style="margin-top:-12px;">+ shipping calculated at checkout</div>
+        <div class="cart-subtotal" style="margin-top:-12px;">
+          <span style="font-size:0.75rem; color:var(--muted);">SHIPPING</span>
+          <span id="cart-shipping-val" style="font-size:0.75rem; color:var(--muted);">$12 CAD</span>
+        </div>
         <div>
           <div class="modal-prompt" style="margin-bottom:8px;">Ship to</div>
           <div class="region-picker">

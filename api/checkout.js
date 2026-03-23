@@ -15,7 +15,7 @@ const PRODUCTS = {
   },
   devil_tshirt: {
     name: 'Green Devil T-Shirt',
-    price: 100,
+    price: 2800,
     image: 'https://heavy-sweater.com/img/Devil_Tshirt.jpg',
     sizes: ['S', 'M', 'L', 'XL', 'XXL', 'XXXL'],
   },
