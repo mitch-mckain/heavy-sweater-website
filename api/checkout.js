@@ -11,19 +11,19 @@ const PRODUCTS = {
     name: 'Heavy Sweater Hoodie',
     price: 5500,
     image: 'https://heavy-sweater.com/img/Sweater-mock.jpg',
-    sizes: ['M', 'L', 'XL', 'XXL'],
+    sizes: ['S', 'M', 'L', 'XL', 'XXL', 'XXXL'],
   },
   devil_tshirt: {
     name: 'Green Devil T-Shirt',
     price: 2800,
     image: 'https://heavy-sweater.com/img/Devil_Tshirt.jpg',
-    sizes: ['S', 'M', 'L'],
+    sizes: ['S', 'M', 'L', 'XL', 'XXL', 'XXXL'],
   },
   stretcher_tshirt: {
     name: 'Stretcher T-Shirt',
     price: 2800,
     image: 'https://heavy-sweater.com/img/Stretcher.jpg',
-    sizes: ['S', 'M', 'L', 'XL', 'XXL'],
+    sizes: ['S', 'M', 'L', 'XL', 'XXL', 'XXXL'],
   },
 };
 
