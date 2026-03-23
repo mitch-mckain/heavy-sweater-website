@@ -2056,6 +2056,7 @@
         const data = await res.json();
         if (data.url) {
           sessionStorage.setItem('lastOrder', JSON.stringify(_cart));
+          sessionStorage.setItem('orderSuccess', '1');
           window.location.href = data.url;
         } else if (data.soldOut) {
           btn.textContent = `${data.soldOutName} (${data.soldOutSize}) is sold out`;
@@ -2073,8 +2074,11 @@
     // Handle post-checkout redirect
     (function() {
       const params = new URLSearchParams(window.location.search);
-      if (params.get('order') === 'success') {
-        // Clear URL first before any history manipulation
+      const orderSuccess = sessionStorage.getItem('orderSuccess') === '1';
+      const orderCanceled = params.get('order') === 'canceled';
+
+      if (orderSuccess) {
+        sessionStorage.removeItem('orderSuccess');
         history.replaceState({ section: 'merch' }, '', '/#merch');
         // Populate order summary from saved cart
         let lastOrder = [];
@@ -2093,10 +2097,11 @@
         updateCartFab();
         showSection('merch', false);
         document.getElementById('order-success-overlay').classList.add('visible');
-      } else if (params.get('order') === 'canceled') {
+      } else if (orderCanceled) {
+        sessionStorage.removeItem('orderSuccess');
+        sessionStorage.removeItem('lastOrder');
         history.replaceState({ section: 'merch' }, '', '/#merch');
         showSection('merch', false);
-        // Show cancellation toast
         const toast = document.getElementById('cart-toast');
         toast.textContent = 'No worries — your order wasn\'t placed.';
         toast.classList.add('show');
