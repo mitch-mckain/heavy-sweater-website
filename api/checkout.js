@@ -32,7 +32,7 @@ const SHIPPING = {
     option: {
       shipping_rate_data: {
         type: 'fixed_amount',
-        fixed_amount: { amount: 1200, currency: 'cad' },
+        fixed_amount: { amount: 100, currency: 'cad' },
         display_name: 'Canada Standard Shipping',
         delivery_estimate: {
           minimum: { unit: 'business_day', value: 5 },
