@@ -138,12 +138,17 @@
       left: 0; right: 0;
       height: 15vh;
       display: flex;
-      align-items: flex-start;
-      justify-content: center;
-      gap: 48px;
-      padding-top: 20px;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 0 28px;
       background: var(--bg);
       z-index: 50;
+    }
+    .site-nav-links {
+      display: flex;
+      gap: 48px;
+      align-items: center;
     }
 
     /* ── SECTIONS ────────────────────────────────────── */
@@ -327,6 +332,25 @@
       letter-spacing: 0.08em;
       color: var(--muted);
       margin-top: -40px;
+    }
+
+    .social-links {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      justify-content: center;
+    }
+    .social-link {
+      display: flex;
+      text-decoration: none;
+      transition: opacity 0.15s;
+    }
+    .social-link:hover { opacity: 0.35; }
+    .social-link img {
+      width: 14px;
+      height: 14px;
+      display: block;
+      filter: brightness(0) opacity(0.87);
     }
 
     .hero-sub {
@@ -1069,11 +1093,11 @@
       .section.active { display: flex; }
 
       #home {
-        justify-content: center;
+        justify-content: flex-start;
         align-items: center;
         text-align: center;
         min-height: calc(100svh - 48px - 32px);
-        padding-top: 40px;
+        padding-top: 80px;
         padding-bottom: 32px;
       }
 
@@ -1161,6 +1185,33 @@
       }
       .mobile-menu .mobile-menu-home {
         color: var(--fg);
+      }
+      .mobile-social-links {
+        display: flex;
+        gap: 20px;
+        align-items: center;
+        justify-content: center;
+        position: absolute;
+        bottom: 28px;
+        left: 0; right: 0;
+      }
+      .mobile-social-links .social-link img {
+        width: 18px;
+        height: 18px;
+        filter: brightness(0) opacity(0.87);
+      }
+      .home-social-links {
+        display: flex;
+        gap: 20px;
+        align-items: center;
+        justify-content: center;
+        margin-top: auto;
+        padding-bottom: 8px;
+      }
+      .home-social-links .social-link img {
+        width: 16px;
+        height: 16px;
+        filter: brightness(0) opacity(0.87);
       }
 
       .mobile-menu-close {
@@ -1291,6 +1342,20 @@
     <button class="home-nav-link listen"  onclick="mobileNav('listen')">listen</button>
     <button class="home-nav-link about"   onclick="mobileNav('about')">about</button>
     <button class="home-nav-link contact" onclick="mobileNav('contact')">contact</button>
+    <div class="mobile-social-links">
+      <a class="social-link" href="https://www.instagram.com/heavy.sweater/" target="_blank" rel="noopener" aria-label="Instagram">
+        <img src="img/instagram.svg" alt="Instagram" />
+      </a>
+      <a class="social-link" href="https://open.spotify.com/artist/6l2bnbZ74Eh6UJOrdfSmRG?si=NhJIXAzHS0uPOR4UWFXPZA" target="_blank" rel="noopener" aria-label="Spotify">
+        <img src="img/spotify.svg" alt="Spotify" />
+      </a>
+      <a class="social-link" href="https://heavy-sweater.bandcamp.com/" target="_blank" rel="noopener" aria-label="Bandcamp">
+        <img src="img/bandcamp.svg" alt="Bandcamp" />
+      </a>
+      <a class="social-link" href="https://music.apple.com/us/artist/heavy-sweater/1551514891" target="_blank" rel="noopener" aria-label="Apple Music">
+        <img src="img/applemusic.svg" alt="Apple Music" />
+      </a>
+    </div>
   </div>
 
   <button class="home-btn" onclick="showSection('home')" title="home">
@@ -1310,6 +1375,20 @@
         <button class="home-nav-link about"   onclick="showSection('about')">about</button>
         <button class="home-nav-link contact" onclick="showSection('contact')">contact</button>
       </nav>
+      <div class="home-social-links">
+        <a class="social-link" href="https://www.instagram.com/heavy.sweater/" target="_blank" rel="noopener" aria-label="Instagram">
+          <img src="img/instagram.svg" alt="Instagram" />
+        </a>
+        <a class="social-link" href="https://open.spotify.com/artist/6l2bnbZ74Eh6UJOrdfSmRG?si=NhJIXAzHS0uPOR4UWFXPZA" target="_blank" rel="noopener" aria-label="Spotify">
+          <img src="img/spotify.svg" alt="Spotify" />
+        </a>
+        <a class="social-link" href="https://heavy-sweater.bandcamp.com/" target="_blank" rel="noopener" aria-label="Bandcamp">
+          <img src="img/bandcamp.svg" alt="Bandcamp" />
+        </a>
+        <a class="social-link" href="https://music.apple.com/us/artist/heavy-sweater/1551514891" target="_blank" rel="noopener" aria-label="Apple Music">
+          <img src="img/applemusic.svg" alt="Apple Music" />
+        </a>
+      </div>
     </section>
 
     <!-- MERCH -->
@@ -1458,11 +1537,27 @@
 
   <!-- SITE NAV -->
   <nav class="site-nav">
-    <button class="home-nav-link shows"   onclick="showSection('shows')">shows</button>
-    <button class="home-nav-link merch"   onclick="showSection('merch')">merch</button>
-    <button class="home-nav-link listen"  onclick="showSection('listen')">listen</button>
-    <button class="home-nav-link about"   onclick="showSection('about')">about</button>
-    <button class="home-nav-link contact" onclick="showSection('contact')">contact</button>
+    <div class="site-nav-links">
+      <button class="home-nav-link shows"   onclick="showSection('shows')">shows</button>
+      <button class="home-nav-link merch"   onclick="showSection('merch')">merch</button>
+      <button class="home-nav-link listen"  onclick="showSection('listen')">listen</button>
+      <button class="home-nav-link about"   onclick="showSection('about')">about</button>
+      <button class="home-nav-link contact" onclick="showSection('contact')">contact</button>
+    </div>
+    <div class="social-links">
+      <a class="social-link" href="https://www.instagram.com/heavy.sweater/" target="_blank" rel="noopener" aria-label="Instagram">
+        <img src="img/instagram.svg" alt="Instagram" />
+      </a>
+      <a class="social-link" href="https://open.spotify.com/artist/6l2bnbZ74Eh6UJOrdfSmRG?si=NhJIXAzHS0uPOR4UWFXPZA" target="_blank" rel="noopener" aria-label="Spotify">
+        <img src="img/spotify.svg" alt="Spotify" />
+      </a>
+      <a class="social-link" href="https://heavy-sweater.bandcamp.com/" target="_blank" rel="noopener" aria-label="Bandcamp">
+        <img src="img/bandcamp.svg" alt="Bandcamp" />
+      </a>
+      <a class="social-link" href="https://music.apple.com/us/artist/heavy-sweater/1551514891" target="_blank" rel="noopener" aria-label="Apple Music">
+        <img src="img/applemusic.svg" alt="Apple Music" />
+      </a>
+    </div>
   </nav>
 
   <!-- SIZE PICKER MODAL -->
