@@ -1788,7 +1788,9 @@
     }
 
     function closeOrderSuccess() {
-      document.getElementById('order-success-overlay').classList.remove('visible');
+      const overlay = document.getElementById('order-success-overlay');
+      overlay.classList.remove('visible');
+      overlay.style.display = '';
     }
 
     function mobileNav(id) {
@@ -1947,8 +1949,9 @@
       const n = _cart.reduce((sum, i) => sum + i.qty, 0);
       // Desktop FAB
       const fab = document.getElementById('cart-fab');
-      document.getElementById('cart-fab-count').textContent = n;
-      fab.classList.toggle('has-items', n > 0);
+      const count = document.getElementById('cart-fab-count');
+      if (fab) fab.classList.toggle('has-items', n > 0);
+      if (count) count.textContent = n;
       // Mobile header badge
       const badge = document.getElementById('mobile-cart-badge');
       if (badge) {
@@ -2096,7 +2099,13 @@
         _cart = [];
         updateCartFab();
         showSection('merch', false);
-        document.getElementById('order-success-overlay').classList.add('visible');
+        setTimeout(function() {
+          const overlay = document.getElementById('order-success-overlay');
+          if (overlay) {
+            overlay.style.display = 'flex';
+            overlay.classList.add('visible');
+          }
+        }, 100);
       } else if (orderCanceled) {
         sessionStorage.removeItem('orderSuccess');
         sessionStorage.removeItem('lastOrder');
