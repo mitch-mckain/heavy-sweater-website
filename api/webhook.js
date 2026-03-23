@@ -42,8 +42,8 @@ module.exports = async function handler(req, res) {
     const session = event.data.object;
     const { items: itemsJson } = session.metadata || {};
 
+    let items = [];
     if (itemsJson) {
-      let items;
       try { items = JSON.parse(itemsJson); } catch (e) { items = []; }
 
       for (const { productId, size, qty = 1 } of items) {
@@ -53,6 +53,31 @@ module.exports = async function handler(req, res) {
         console.log(`Inventory decremented: ${inventoryKey} by ${qty} → ${newStock}`);
         if (newStock < 0) await redis.set(inventoryKey, 0);
       }
+    }
+
+    // Send notification email
+    if (process.env.RESEND_API_KEY) {
+      const customerEmail = session.customer_details?.email || 'unknown';
+      const customerName  = session.customer_details?.name  || 'unknown';
+      const total = ((session.amount_total ?? 0) / 100).toFixed(2);
+
+      const itemLines = items.map(({ productId, size, qty = 1 }) =>
+        `• ${productId.replace(/_/g, ' ')} — Size ${size} x${qty}`
+      ).join('\n');
+
+      await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          from: 'Heavy Sweater Store <orders@heavy-sweater.com>',
+          to: ['hvyswtr@gmail.com'],
+          subject: `New order from ${customerName}`,
+          text: `New order on heavy-sweater.com!\n\nCustomer: ${customerName}\nEmail: ${customerEmail}\nTotal: $${total} CAD\n\nItems:\n${itemLines}`,
+        }),
+      });
     }
   }
 
