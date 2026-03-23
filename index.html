@@ -2074,8 +2074,11 @@
     (function() {
       const params = new URLSearchParams(window.location.search);
       if (params.get('order') === 'success') {
+        // Clear URL first before any history manipulation
+        history.replaceState({ section: 'merch' }, '', '/#merch');
         // Populate order summary from saved cart
-        const lastOrder = JSON.parse(sessionStorage.getItem('lastOrder') || '[]');
+        let lastOrder = [];
+        try { lastOrder = JSON.parse(sessionStorage.getItem('lastOrder') || '[]'); } catch(e) {}
         sessionStorage.removeItem('lastOrder');
         const itemsEl = document.getElementById('order-success-items');
         if (lastOrder.length > 0) {
@@ -2088,12 +2091,11 @@
         }
         _cart = [];
         updateCartFab();
-        showSection('merch');
+        showSection('merch', false);
         document.getElementById('order-success-overlay').classList.add('visible');
-        history.replaceState({}, '', '/');
       } else if (params.get('order') === 'canceled') {
-        showSection('merch');
-        history.replaceState({}, '', '/');
+        history.replaceState({ section: 'merch' }, '', '/#merch');
+        showSection('merch', false);
         // Show cancellation toast
         const toast = document.getElementById('cart-toast');
         toast.textContent = 'No worries — your order wasn\'t placed.';
