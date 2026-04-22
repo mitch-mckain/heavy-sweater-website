@@ -609,6 +609,12 @@
       text-align: center;
     }
 
+    .show-ticket-link.door {
+      opacity: 0.45;
+      cursor: default;
+      pointer-events: none;
+    }
+
     .shows-empty {
       font-size: 1rem;
       color: var(--muted);
@@ -1518,17 +1524,18 @@
         </div>
 
         <div class="show-card" data-date="2026-05-30">
-          <div class="show-poster-placeholder">poster</div>
+          <img class="show-poster" src="img/show-brandis-may30.jpg" alt="Brandi's Kitchen show poster" />
           <div class="show-info">
             <div class="show-date">Sat, May 30, 2026 — Doors 9 PM</div>
             <div class="show-venue">Brandi's Kitchen &amp; Bar</div>
             <div class="show-city">Brantford, ON · w/ Airgun / Comfort Object / Gutmachine</div>
             <div class="show-city">$15 / PWYC</div>
+            <span class="btn show-ticket-link door">Sold at door</span>
           </div>
         </div>
 
         <div class="show-card" data-date="2026-06-12">
-          <div class="show-poster-placeholder">poster</div>
+          <img class="show-poster" src="img/show-monarch-jun12.jpg" alt="Monarch Tavern show poster" />
           <div class="show-info">
             <div class="show-date">Fri, Jun 12, 2026 — Doors 7 PM</div>
             <div class="show-venue">Monarch Tavern</div>
