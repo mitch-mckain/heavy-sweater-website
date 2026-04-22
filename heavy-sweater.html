@@ -1498,51 +1498,7 @@
     <!-- SHOWS -->
     <section class="section" id="shows">
 
-      <div class="shows-grid" id="shows-grid">
-
-        <div class="show-card" data-date="2026-03-19">
-          <img class="show-poster" src="https://toronto.askapunk.net/media/a8bf59067645d8019aa240c63b2a1959.jpg" alt="Heavy Sweater show poster" />
-          <div class="show-info">
-            <div class="show-date">Thu, Mar 19, 2026 — 19+</div>
-            <div class="show-venue">Doc Ellis</div>
-            <div class="show-city">Toronto, ON · w/ Backseat Dragon / Be Still / Prior Things</div>
-            <div class="show-city">$15 adv / $20 door (PWYC)</div>
-            <a href="https://www.newfriendsdiy.com/event-details-registration/heavy-sweater-backseat-dragon-be-still-prior-things" target="_blank" class="btn show-ticket-link">Tickets</a>
-          </div>
-        </div>
-
-        <div class="show-card" data-date="2026-05-14">
-          <img class="show-poster" src="https://static.tixr.com/static/images/external/img/8da42cae-60dd-4c3c-91a5-f58e17adfef7.png" alt="Kerosene Heights show poster" />
-          <div class="show-info">
-            <div class="show-date">Thu, May 14, 2026 — 8:00 PM</div>
-            <div class="show-venue">The Sound Garage at Blood Brothers Brewing</div>
-            <div class="show-city">Toronto, ON · w/ Hi Low / Kerosene Heights</div>
-            <a href="https://www.tixr.com/groups/noisemakerpresents/events/kerosene-heights-171874" target="_blank" class="btn show-ticket-link">Tickets</a>
-          </div>
-        </div>
-
-        <div class="show-card" data-date="2026-05-30">
-          <img class="show-poster" src="img/brandis-may30-2026-SM.PNG" alt="Brandi's Kitchen show poster" />
-          <div class="show-info">
-            <div class="show-date">Sat, May 30, 2026 — Doors 9 PM</div>
-            <div class="show-venue">Brandi's Kitchen &amp; Bar</div>
-            <div class="show-city">Brantford, ON · w/ Airgun / Comfort Object / Gutmachine</div>
-            <div class="show-city">$15 / PWYC</div>
-            <span class="btn show-ticket-link door">Sold at door</span>
-          </div>
-        </div>
-
-        <div class="show-card" data-date="2026-06-12">
-          <img class="show-poster" src="img/madfolk.webp" alt="Monarch Tavern show poster" />
-          <div class="show-info">
-            <div class="show-date">Fri, Jun 12, 2026 — Doors 7 PM</div>
-            <div class="show-venue">Monarch Tavern</div>
-            <div class="show-city">Toronto, ON · w/ Madfolk (Album Release)</div>
-            <a href="https://www.eventbrite.ca/e/madfolk-album-release-show-tickets-1987069532462?aff=oddtdtcreator" target="_blank" class="btn show-ticket-link">Tickets</a>
-          </div>
-        </div>
-
-      </div>
+      <div class="shows-grid" id="shows-grid"></div>
       <p class="shows-empty" id="shows-empty">No upcoming shows atm</p>
     </section>
 
@@ -1795,18 +1751,103 @@
       if (e.key === 'Escape') closeModal();
     });
 
-    // Remove past shows and show empty state if none remain
-    (function() {
+    // Load shows dynamically from API
+    (async function loadShows() {
+      const grid = document.getElementById('shows-grid');
+      const emptyMsg = document.getElementById('shows-empty');
       const today = new Date();
       today.setHours(0, 0, 0, 0);
-      const cards = document.querySelectorAll('#shows-grid .show-card[data-date]');
-      cards.forEach(card => {
-        const d = new Date(card.dataset.date + 'T00:00:00');
-        if (d < today) card.remove();
-      });
-      const remaining = document.querySelectorAll('#shows-grid .show-card');
-      if (remaining.length === 0) {
-        document.getElementById('shows-empty').style.display = 'block';
+
+      const DAYS   = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+      const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+      function formatDate(dateStr) {
+        const [y, m, d] = dateStr.split('-').map(Number);
+        const dt = new Date(y, m - 1, d);
+        return `${DAYS[dt.getDay()]}, ${MONTHS[dt.getMonth()]} ${dt.getDate()}, ${y}`;
+      }
+
+      function buildCard(show) {
+        const card = document.createElement('div');
+        card.className = 'show-card';
+        card.dataset.date = show.date;
+
+        if (show.posterSrc) {
+          const img = document.createElement('img');
+          img.className = 'show-poster';
+          img.src = show.posterSrc;
+          img.alt = show.venue + ' show poster';
+          card.appendChild(img);
+        } else {
+          const ph = document.createElement('div');
+          ph.className = 'show-poster-placeholder';
+          ph.textContent = 'poster';
+          card.appendChild(ph);
+        }
+
+        const info = document.createElement('div');
+        info.className = 'show-info';
+
+        const dateEl = document.createElement('div');
+        dateEl.className = 'show-date';
+        dateEl.textContent = formatDate(show.date) + (show.timeInfo ? ' — ' + show.timeInfo : '');
+        info.appendChild(dateEl);
+
+        const venueEl = document.createElement('div');
+        venueEl.className = 'show-venue';
+        venueEl.textContent = show.venue;
+        info.appendChild(venueEl);
+
+        if (show.city || show.support) {
+          const cityEl = document.createElement('div');
+          cityEl.className = 'show-city';
+          let txt = show.city || '';
+          if (show.support) txt += (txt ? ' · ' : '') + 'w/ ' + show.support;
+          cityEl.textContent = txt;
+          info.appendChild(cityEl);
+        }
+
+        if (show.price) {
+          const priceEl = document.createElement('div');
+          priceEl.className = 'show-city';
+          priceEl.textContent = show.price;
+          info.appendChild(priceEl);
+        }
+
+        if (show.doorOnly) {
+          const btn = document.createElement('span');
+          btn.className = 'btn show-ticket-link door';
+          btn.textContent = 'Sold at door';
+          info.appendChild(btn);
+        } else if (show.ticketUrl) {
+          const a = document.createElement('a');
+          a.className = 'btn show-ticket-link';
+          a.href = show.ticketUrl;
+          a.target = '_blank';
+          a.rel = 'noopener noreferrer';
+          a.textContent = 'Tickets';
+          info.appendChild(a);
+        }
+
+        card.appendChild(info);
+        return card;
+      }
+
+      try {
+        const res = await fetch('/api/shows');
+        const shows = await res.json();
+        const upcoming = shows.filter(s => {
+          const [y, m, d] = s.date.split('-').map(Number);
+          return new Date(y, m - 1, d) >= today;
+        });
+
+        if (upcoming.length === 0) {
+          emptyMsg.style.display = 'block';
+        } else {
+          upcoming.forEach(s => grid.appendChild(buildCard(s)));
+        }
+      } catch (e) {
+        emptyMsg.style.display = 'block';
       }
     })();
 

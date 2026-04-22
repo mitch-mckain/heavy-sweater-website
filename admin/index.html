@@ -91,7 +91,7 @@
     .btn:disabled { opacity: 0.4; pointer-events: none; }
 
     /* ── ADMIN DASHBOARD ── */
-    #dashboard { display: none; flex-direction: column; gap: 40px; width: 100%; max-width: 640px; }
+    #dashboard { display: none; flex-direction: column; gap: 32px; width: 100%; max-width: 640px; }
 
     .dash-header {
       display: flex;
@@ -117,6 +117,32 @@
       padding: 4px 0;
     }
     .dash-logout:hover { color: var(--fg); }
+
+    /* ── TABS ── */
+    .tab-bar {
+      display: flex;
+      gap: 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .tab-btn {
+      font-family: 'Fira Code', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: var(--muted);
+      cursor: pointer;
+      padding: 10px 20px 10px 0;
+      margin-bottom: -1px;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .tab-btn.active { color: var(--fg); border-bottom-color: var(--fg); }
+    .tab-btn:hover { color: var(--fg); }
+
+    .tab-panel { display: none; flex-direction: column; gap: 32px; }
+    .tab-panel.active { display: flex; }
 
     /* ── PRODUCT BLOCK ── */
     .product-block {
@@ -206,6 +232,157 @@
     .save-row-btn.saved { border-color: var(--green); color: var(--green); }
     .save-row-btn.error { border-color: var(--red); color: var(--red); }
 
+    /* ── SHOWS ── */
+    .shows-form {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .form-section-label {
+      font-size: 0.6rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .form-row {
+      display: flex;
+      gap: 12px;
+    }
+
+    .form-field {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      flex: 1;
+    }
+
+    .form-label {
+      font-size: 0.58rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .form-input {
+      font-family: 'Fira Code', monospace;
+      font-size: 0.78rem;
+      padding: 9px 12px;
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--fg);
+      outline: none;
+      width: 100%;
+    }
+    .form-input:focus { border-color: var(--fg); }
+
+    .form-checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 4px 0;
+    }
+    .form-checkbox-row input[type="checkbox"] {
+      width: 15px;
+      height: 15px;
+      accent-color: var(--fg);
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .form-checkbox-row label {
+      font-size: 0.65rem;
+      letter-spacing: 0.06em;
+      color: var(--fg);
+      cursor: pointer;
+    }
+
+    .add-show-btn {
+      font-family: 'Fira Code', monospace;
+      font-size: 0.68rem;
+      letter-spacing: 0.08em;
+      padding: 11px 24px;
+      border: 1px solid var(--fg);
+      background: var(--fg);
+      color: var(--bg);
+      cursor: pointer;
+      transition: opacity 0.15s;
+      width: 100%;
+    }
+    .add-show-btn:hover { opacity: 0.8; }
+    .add-show-btn:disabled { opacity: 0.4; pointer-events: none; }
+
+    .shows-list {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .show-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 13px 0;
+      border-bottom: 1px solid var(--border);
+      gap: 16px;
+    }
+    .show-row:first-child { border-top: 1px solid var(--border); }
+
+    .show-row-info {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .show-row-venue {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .show-row-meta {
+      font-size: 0.6rem;
+      letter-spacing: 0.04em;
+      color: var(--muted);
+    }
+
+    .delete-show-btn {
+      font-family: 'Fira Code', monospace;
+      font-size: 0.58rem;
+      letter-spacing: 0.06em;
+      padding: 5px 12px;
+      border: 1px solid var(--border);
+      background: none;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.15s;
+      flex-shrink: 0;
+    }
+    .delete-show-btn:hover { border-color: var(--red); color: var(--red); }
+
+    .shows-empty-msg {
+      font-size: 0.65rem;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+      padding: 16px 0;
+      text-align: center;
+    }
+
+    .form-status {
+      font-size: 0.62rem;
+      letter-spacing: 0.05em;
+      min-height: 1em;
+      text-align: center;
+    }
+    .form-status.ok { color: var(--green); }
+    .form-status.err { color: var(--red); }
+
     /* ── STATUS BAR ── */
     #status-bar {
       font-size: 0.6rem;
@@ -239,10 +416,89 @@
   <!-- Dashboard -->
   <div id="dashboard">
     <div class="dash-header">
-      <div class="dash-title">inventory</div>
+      <div class="dash-title">heavy sweater / admin</div>
       <button class="dash-logout" onclick="logout()">sign out</button>
     </div>
-    <div id="inventory-area"></div>
+
+    <!-- Tabs -->
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="switchTab('inventory')">inventory</button>
+      <button class="tab-btn" onclick="switchTab('shows')">shows</button>
+    </div>
+
+    <!-- Inventory Tab -->
+    <div class="tab-panel active" id="tab-inventory">
+      <div id="inventory-area"></div>
+    </div>
+
+    <!-- Shows Tab -->
+    <div class="tab-panel" id="tab-shows">
+
+      <!-- Add show form -->
+      <div class="shows-form">
+        <div class="form-section-label">add a show</div>
+
+        <div class="form-row">
+          <div class="form-field">
+            <div class="form-label">Date *</div>
+            <input class="form-input" type="date" id="show-date" />
+          </div>
+          <div class="form-field">
+            <div class="form-label">Doors / Time</div>
+            <input class="form-input" type="text" id="show-time" placeholder="e.g. Doors 9 PM" />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-field">
+            <div class="form-label">Venue *</div>
+            <input class="form-input" type="text" id="show-venue" placeholder="e.g. Monarch Tavern" />
+          </div>
+          <div class="form-field">
+            <div class="form-label">City</div>
+            <input class="form-input" type="text" id="show-city" placeholder="e.g. Toronto, ON" />
+          </div>
+        </div>
+
+        <div class="form-field">
+          <div class="form-label">Support Acts</div>
+          <input class="form-input" type="text" id="show-support" placeholder="e.g. Airgun / Comfort Object" />
+        </div>
+
+        <div class="form-row">
+          <div class="form-field">
+            <div class="form-label">Price Info</div>
+            <input class="form-input" type="text" id="show-price" placeholder="e.g. $15 / PWYC" />
+          </div>
+          <div class="form-field">
+            <div class="form-label">Ticket URL</div>
+            <input class="form-input" type="text" id="show-ticket" placeholder="https://..." />
+          </div>
+        </div>
+
+        <div class="form-field">
+          <div class="form-label">Poster Image (URL or img/filename.jpg)</div>
+          <input class="form-input" type="text" id="show-poster" placeholder="img/myposter.jpg or https://..." />
+        </div>
+
+        <div class="form-checkbox-row">
+          <input type="checkbox" id="show-door-only" />
+          <label for="show-door-only">Sold at door — show greyed-out button instead of ticket link</label>
+        </div>
+
+        <button class="add-show-btn" id="add-show-btn" onclick="addShow()">Add Show</button>
+        <div class="form-status" id="show-form-status"></div>
+      </div>
+
+      <!-- Current shows list -->
+      <div>
+        <div class="form-section-label" style="margin-bottom: 0;">upcoming shows</div>
+        <div class="shows-list" id="shows-list">
+          <div class="shows-empty-msg">loading...</div>
+        </div>
+      </div>
+    </div>
+
     <div id="status-bar"></div>
   </div>
 
@@ -255,6 +511,15 @@
     };
 
     let _adminKey = '';
+
+    // ── Tabs ─────────────────────────────────────────────
+    function switchTab(tab) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.remove('active'));
+      document.querySelector(`.tab-btn[onclick="switchTab('${tab}')"]`).classList.add('active');
+      document.getElementById(`tab-${tab}`).classList.add('active');
+      if (tab === 'shows') loadShows();
+    }
 
     // ── Login ───────────────────────────────────────────
     document.getElementById('key-input').addEventListener('keydown', e => {
@@ -389,6 +654,153 @@
         btn.textContent = 'error';
         btn.className = 'save-row-btn error';
       } finally {
+        btn.disabled = false;
+      }
+    }
+
+    // ── Shows ────────────────────────────────────────────
+    let _shows = [];
+
+    async function loadShows() {
+      const list = document.getElementById('shows-list');
+      list.innerHTML = '<div class="shows-empty-msg">loading...</div>';
+      try {
+        const res = await fetch('/api/shows');
+        _shows = await res.json();
+        renderShowsList();
+      } catch (e) {
+        list.innerHTML = '<div class="shows-empty-msg" style="color:var(--red)">could not load shows</div>';
+      }
+    }
+
+    function renderShowsList() {
+      const list = document.getElementById('shows-list');
+      list.innerHTML = '';
+
+      // Filter to upcoming only
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const upcoming = _shows.filter(s => {
+        const [y, m, d] = s.date.split('-').map(Number);
+        return new Date(y, m - 1, d) >= today;
+      });
+
+      if (upcoming.length === 0) {
+        list.innerHTML = '<div class="shows-empty-msg">no upcoming shows — add one above</div>';
+        return;
+      }
+
+      upcoming.forEach(show => {
+        const row = document.createElement('div');
+        row.className = 'show-row';
+
+        const info = document.createElement('div');
+        info.className = 'show-row-info';
+
+        const venue = document.createElement('div');
+        venue.className = 'show-row-venue';
+        venue.textContent = show.venue;
+        info.appendChild(venue);
+
+        const meta = document.createElement('div');
+        meta.className = 'show-row-meta';
+        let metaParts = [show.date];
+        if (show.city) metaParts.push(show.city);
+        if (show.support) metaParts.push('w/ ' + show.support);
+        meta.textContent = metaParts.join(' · ');
+        info.appendChild(meta);
+
+        const delBtn = document.createElement('button');
+        delBtn.className = 'delete-show-btn';
+        delBtn.textContent = 'remove';
+        delBtn.onclick = () => deleteShow(show.id, delBtn);
+
+        row.appendChild(info);
+        row.appendChild(delBtn);
+        list.appendChild(row);
+      });
+    }
+
+    async function addShow() {
+      const date     = document.getElementById('show-date').value;
+      const timeInfo = document.getElementById('show-time').value.trim();
+      const venue    = document.getElementById('show-venue').value.trim();
+      const city     = document.getElementById('show-city').value.trim();
+      const support  = document.getElementById('show-support').value.trim();
+      const price    = document.getElementById('show-price').value.trim();
+      const ticketUrl = document.getElementById('show-ticket').value.trim();
+      const posterSrc = document.getElementById('show-poster').value.trim();
+      const doorOnly  = document.getElementById('show-door-only').checked;
+
+      const status = document.getElementById('show-form-status');
+
+      if (!date || !venue) {
+        status.textContent = 'date and venue are required';
+        status.className = 'form-status err';
+        return;
+      }
+
+      const btn = document.getElementById('add-show-btn');
+      btn.disabled = true;
+      btn.textContent = 'Adding...';
+      status.textContent = '';
+      status.className = 'form-status';
+
+      try {
+        const res = await fetch('/api/shows', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-admin-key': _adminKey,
+          },
+          body: JSON.stringify({ date, timeInfo, venue, city, support, price, ticketUrl, posterSrc, doorOnly }),
+        });
+
+        if (res.ok) {
+          // Clear form
+          ['show-date','show-time','show-venue','show-city','show-support','show-price','show-ticket','show-poster'].forEach(id => {
+            document.getElementById(id).value = '';
+          });
+          document.getElementById('show-door-only').checked = false;
+          status.textContent = 'show added ✓';
+          status.className = 'form-status ok';
+          setTimeout(() => { status.textContent = ''; status.className = 'form-status'; }, 3000);
+          await loadShows();
+        } else {
+          const err = await res.json();
+          status.textContent = err.error || 'error adding show';
+          status.className = 'form-status err';
+        }
+      } catch (e) {
+        status.textContent = 'could not reach server';
+        status.className = 'form-status err';
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Add Show';
+      }
+    }
+
+    async function deleteShow(id, btn) {
+      if (!confirm('Remove this show?')) return;
+      btn.textContent = '...';
+      btn.disabled = true;
+      try {
+        const res = await fetch('/api/shows', {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-admin-key': _adminKey,
+          },
+          body: JSON.stringify({ id }),
+        });
+        if (res.ok) {
+          await loadShows();
+        } else {
+          btn.textContent = 'error';
+          btn.disabled = false;
+        }
+      } catch (e) {
+        btn.textContent = 'error';
         btn.disabled = false;
       }
     }
