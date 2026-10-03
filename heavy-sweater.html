@@ -265,12 +265,43 @@
       align-items: center;
     }
 
+    .about-figure {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+    }
+
+    .about-credit {
+      font-size: 0.65rem;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+    }
+
+    /* frame: 1px stroke + 6px gap, with angled (chamfered) corners */
+    .about-frame {
+      --cut: 9px;
+      position: relative;
+      width: 100%;
+      max-width: 330px;
+      justify-self: center;
+      padding: 7px;
+    }
+
+    .about-frame::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: #000;
+      clip-path: polygon(evenodd, var(--cut) 0, calc(100% - var(--cut)) 0, 100% var(--cut), 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, var(--cut) 100%, 0 calc(100% - var(--cut)), 0 var(--cut), var(--cut) 0, calc(1px + var(--cut) - 0.59px) 1px, calc(100% - 1px - var(--cut) + 0.59px) 1px, calc(100% - 1px) calc(1px + var(--cut) - 0.59px), calc(100% - 1px) calc(100% - 1px - var(--cut) + 0.59px), calc(100% - 1px - var(--cut) + 0.59px) calc(100% - 1px), calc(1px + var(--cut) - 0.59px) calc(100% - 1px), 1px calc(100% - 1px - var(--cut) + 0.59px), 1px calc(1px + var(--cut) - 0.59px), calc(1px + var(--cut) - 0.59px) 1px);
+    }
+
     .about-img {
       width: 100%;
       height: auto;
-      object-fit: contain;
       display: block;
-      padding: 12px;
+      clip-path: polygon(calc(var(--cut) - 4.1px) 0, calc(100% - (var(--cut) - 4.1px)) 0, 100% calc(var(--cut) - 4.1px), 100% calc(100% - (var(--cut) - 4.1px)), calc(100% - (var(--cut) - 4.1px)) 100%, calc(var(--cut) - 4.1px) 100%, 0 calc(100% - (var(--cut) - 4.1px)), 0 calc(var(--cut) - 4.1px));
     }
 
     .about-text {
@@ -624,8 +655,8 @@
       align-items: center;
       padding: 24px 20px;
       gap: 0;
-      overflow: hidden;
-      justify-content: center;
+      overflow-y: auto;
+      justify-content: safe center;
     }
 
     .listen-inner {
@@ -639,6 +670,9 @@
     }
 
     .listen-category { display: flex; flex-direction: column; gap: 20px; }
+
+    .listen-row { display: flex; gap: 48px; }
+    .listen-row > .listen-category { flex: 1; }
 
     .listen-cat-label {
       font-size: 0.65rem;
@@ -660,7 +694,16 @@
       flex-direction: column;
       gap: 8px;
       cursor: pointer;
-      width: clamp(120px, 14vw, 190px);
+      width: clamp(120px, min(14vw, 20vh), 190px);
+    }
+
+    a.album-card { color: inherit; text-decoration: none; }
+
+    @media (min-width: 769px) and (max-height: 760px) {
+      #listen { padding-top: 12px; padding-bottom: 12px; }
+      .listen-inner { gap: 16px; }
+      .listen-category { gap: 12px; }
+      .listen-cat-label { padding-bottom: 8px; }
     }
 
     .album-art {
@@ -1330,6 +1373,7 @@
       #listen { padding: 32px 20px; justify-content: center; align-items: center; }
       .listen-inner { flex: none; min-height: auto; gap: 32px; }
       .listen-albums { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+      .listen-row { flex-direction: column; gap: 32px; }
       .album-card { width: 100%; }
 
       /* About */
@@ -1341,7 +1385,8 @@
         align-items: center;
         gap: 20px;
       }
-      .about-img { max-height: 50vw; padding: 0; object-fit: cover; width: 100%; }
+      .about-frame { width: auto; max-width: 100%; padding: 6px; --cut: 7px; }
+      .about-img { max-height: 44vh; width: auto; max-width: 100%; }
       .about-text { padding: 0; gap: 16px; text-align: center; align-items: center; }
       .about-body { font-size: clamp(1.2rem, 5vw, 2rem); }
 
@@ -1466,7 +1511,7 @@
       <p class="section-title">Merch</p>
       <div class="merch-grid">
         <div class="merch-card">
-          <span class="merch-price-tag">$55</span>
+          <span class="merch-price-tag">$40</span>
           <img class="merch-img" src="img/Sweater-mock.jpg" alt="Heavy Sweater Hoodie" onclick="openMerchLightbox(this)" />
           <div class="merch-card-info">
             <div class="merch-name">Heavy Sweater Hoodie</div>
@@ -1475,7 +1520,7 @@
           </div>
         </div>
         <div class="merch-card">
-          <span class="merch-price-tag">$28</span>
+          <span class="merch-price-tag">$20</span>
           <img class="merch-img" src="img/Devil_Tshirt.jpg" alt="Green Devil T-Shirt" onclick="openMerchLightbox(this)" />
           <div class="merch-card-info">
             <div class="merch-name">Green Devil T-Shirt</div>
@@ -1484,7 +1529,7 @@
           </div>
         </div>
         <div class="merch-card">
-          <span class="merch-price-tag">$28</span>
+          <span class="merch-price-tag">$20</span>
           <img class="merch-img" src="img/Stretcher.jpg" alt="Stretcher T-Shirt" onclick="openMerchLightbox(this)" />
           <div class="merch-card-info">
             <div class="merch-name">Stretcher T-Shirt</div>
@@ -1551,19 +1596,37 @@
 
       <div class="listen-inner">
 
-        <!-- LPs -->
-        <div class="listen-category">
-          <div class="listen-cat-label">LP</div>
-          <div class="listen-albums">
+        <div class="listen-row">
+          <!-- LPs -->
+          <div class="listen-category">
+            <div class="listen-cat-label">LP</div>
+            <div class="listen-albums">
 
-            <div class="album-card" onclick="openModal('SO SAD !', 'https://heavy-sweater.bandcamp.com/album/so-sad-2', 'https://open.spotify.com/album/5LceiNUkXq3SMblAzQ3cBJ?si=PA2DlGubQ9KjsnpzNfqUhg', 'https://music.apple.com/us/album/so-sad/1797009279')">
-              <img class="album-art" src="img/so_sad.jpg" alt="SO SAD !" />
-              <div class="album-info">
-                <div class="album-title">SO SAD !</div>
-                <div class="album-year">2025</div>
+              <div class="album-card" onclick="openModal('SO SAD !', 'https://heavy-sweater.bandcamp.com/album/so-sad-2', 'https://open.spotify.com/album/5LceiNUkXq3SMblAzQ3cBJ?si=PA2DlGubQ9KjsnpzNfqUhg', 'https://music.apple.com/us/album/so-sad/1797009279')">
+                <img class="album-art" src="img/so_sad.jpg" alt="SO SAD !" />
+                <div class="album-info">
+                  <div class="album-title">SO SAD !</div>
+                  <div class="album-year">2025</div>
+                </div>
               </div>
-            </div>
 
+            </div>
+          </div>
+
+          <!-- Compilations -->
+          <div class="listen-category">
+            <div class="listen-cat-label">Compilations</div>
+            <div class="listen-albums">
+
+              <a class="album-card" href="https://thisisbeginningtohurt.bandcamp.com/album/this-is-beginning-to-hurt-a-tribute-to-pinkerton-3" target="_blank" rel="noopener">
+                <img class="album-art" src="img/pinkerton-tribute.jpg" alt="This Is Beginning To Hurt - A Tribute To Pinkerton" />
+                <div class="album-info">
+                  <div class="album-title">THIS IS BEGINNING TO HURT - PINKERTON TRIBUTE</div>
+                  <div class="album-year">2026</div>
+                </div>
+              </a>
+
+            </div>
           </div>
         </div>
 
@@ -1606,7 +1669,12 @@
     <section class="section" id="about">
 
       <div class="about-inner">
-        <img class="about-img" src="img/live.png" alt="Heavy Sweater live" />
+        <figure class="about-figure">
+          <div class="about-frame">
+            <img class="about-img" src="img/live-jump.jpg" alt="Heavy Sweater live" />
+          </div>
+          <figcaption class="about-credit">(photo by mike neal)</figcaption>
+        </figure>
         <div class="about-text">
           <div class="about-body">
             <p>Heavy Sweater is a rock band from Toronto ON.</p>
@@ -1891,9 +1959,9 @@
       stretcher_tshirt: 'Stretcher T-Shirt',
     };
     const PRODUCT_PRICES = {
-      hoodie: 5500,
-      devil_tshirt: 2800,
-      stretcher_tshirt: 2800,
+      hoodie: 4000,
+      devil_tshirt: 2000,
+      stretcher_tshirt: 2000,
     };
     const PRODUCT_IMAGES = {
       hoodie:           'img/Sweater-mock.jpg',

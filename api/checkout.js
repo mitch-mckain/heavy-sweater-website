@@ -9,19 +9,19 @@ const redis = new Redis({
 const PRODUCTS = {
   hoodie: {
     name: 'Heavy Sweater Hoodie',
-    price: 5500,
+    price: 4000,
     image: 'https://heavy-sweater.com/img/Sweater-mock.jpg',
     sizes: ['S', 'M', 'L', 'XL', 'XXL', 'XXXL'],
   },
   devil_tshirt: {
     name: 'Green Devil T-Shirt',
-    price: 2800,
+    price: 2000,
     image: 'https://heavy-sweater.com/img/Devil_Tshirt.jpg',
     sizes: ['S', 'M', 'L', 'XL', 'XXL', 'XXXL'],
   },
   stretcher_tshirt: {
     name: 'Stretcher T-Shirt',
-    price: 2800,
+    price: 2000,
     image: 'https://heavy-sweater.com/img/Stretcher.jpg',
     sizes: ['S', 'M', 'L', 'XL', 'XXL', 'XXXL'],
   },
